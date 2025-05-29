@@ -1,0 +1,326 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 16px; /* Aumentamos la fuente base para mejor legibilidad en pantallas más grandes */
+    line-height: 1.6;
+    color: #2e0c4c; /* Color de texto principal */
+    background-color: #f9f9f9; /* Un fondo ligero para contraste */
+}
+
+/* Estilos del HEADER */
+.navbar {
+    background-color: #ffe500;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* <-- Centro todo */
+    gap: 2rem;
+    padding: 0.8rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    animation: slideDown 0.6s ease-in-out;
+    height: 60px;
+}
+
+/* Animación */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Logo */
+.logo img {
+    height: 100px; /* Mantiene la proporción */
+    cursor: pointer;
+}
+
+.logo img:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+/* Búsqueda */
+.acciones {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 25px;
+    padding: 0.3rem 1rem;
+    width: 100%;
+    max-width: 450px;
+    transition: box-shadow 0.3s ease;
+}
+
+.acciones:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.acciones i {
+    color: #2e0c4c;
+    margin-right: 0.5rem;
+}
+
+.acciones input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 1rem;
+}
+
+/* Navegación */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #2e0c4c;
+    font-weight: bold;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: transform 0.3s ease;
+}
+
+.nav-links a:hover {
+    transform: translateY(-3px);
+}
+
+/*Estilo para el enlace "MENU" activo */
+/* .nav-links a:nth-child(1) {
+    /* Selecciona el primer enlace (MENU) 
+    border-bottom: 3px solid #c00000;  /*Añade un borde inferior rojo
+    padding-bottom: 3px;  /*Espacio para que el borde no toque el texto
+} */
+
+/* Carrito */
+.cart {
+    background-color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 0.4rem 0.8rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cart:hover {
+    background-color: #f1f1f1;
+    transform: scale(1.05);
+}
+
+.cart i {
+    color: #2e0c4c;
+    font-size: 20px;
+}
+
+.cart-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: #2e0c4c;
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    padding: 2px 6px;
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #2e0c4c;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative; /* Esencial para posicionar el menú desplegable */
+    display: inline-block; /* Permite que el contenedor del dropdown se ajuste al contenido */
+    /* Ajusta el espaciado si es necesario para que se vea bien en la navbar */
+    margin-right: 1.5rem; /* Ajusta el margen si es necesario */
+}
+
+.dropdown-toggle {
+    text-decoration: none;
+    color: #2e0c4c;
+    font-weight: bold;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    padding: 0.5rem 0; /* Añade un poco de padding para que el clic sea más fácil */
+}
+
+.dropdown-toggle:hover {
+    transform: translateY(-3px);
+}
+
+.dropdown-arrow {
+    margin-left: 0.3rem; /* Espacio entre el nombre y la flecha */
+    transition: transform 0.2s ease;
+}
+
+.dropdown-menu {
+    display: none; /* Oculto por defecto */
+    position: absolute;
+    background-color: white; /* Color de fondo del menú */
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 101; /* Asegúrate de que esté por encima de otros elementos */
+    border-radius: 5px;
+    overflow: hidden; /* Para que los bordes redondeados se apliquen bien a los ítems */
+    top: 100%; /* Posiciona debajo del toggle */
+    left: 0; /* Alinea a la izquierda del toggle */
+    margin-top: 5px; /* Espacio entre el toggle y el menú */
+}
+
+.dropdown-menu a {
+    color: #2e0c4c;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-weight: normal; /* Para que no sea negrita como los enlaces de la navbar */
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f1f1f1;
+    transform: none; /* Evita la animación de translateY de los enlaces de la navbar */
+}
+
+.dropdown-menu form {
+    margin: 0; /* Elimina el margen predeterminado del formulario */
+}
+
+.dropdown-menu button[type="submit"] {
+    background: none;
+    border: none;
+    color: #2e0c4c;
+    padding: 12px 16px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.95rem; /* Hereda el tamaño de la fuente */
+    font-weight: normal;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-menu button[type="submit"]:hover {
+    background-color: #f1f1f1;
+}
+
+/* Clase para mostrar el menú */
+.dropdown-menu.show {
+    display: block; /* Muestra el menú */
+}
+
+.nav-links a.active-link {
+    border-bottom: 3px solid #c00000; /* Añade un borde inferior rojo */
+    padding-bottom: 3px; /* Espacio para que el borde no toque el texto */
+}
+
+.dropdown.show .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-wrap: wrap;
+        justify-content: space-between;
+        height: auto;
+        gap: 1rem;
+    }
+
+    .logo img {
+        height: 70px;
+    }
+
+    .acciones {
+        order: 3;
+        width: 100%;
+        max-width: none;
+        margin-bottom: 10px;
+    }
+
+    .menu-toggle {
+        display: block;
+        order: 2;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #ffe500;
+        padding: 1rem 0;
+        border-top: 1px solid #ccc;
+        gap: 0.5rem;
+        order: 4;
+    }
+
+    .nav-links a,
+    .nav-links .cart {
+        padding: 0.8rem 1.5rem;
+        width: 100%;
+        justify-content: flex-start;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .dropdown {
+        width: 100%; /* El dropdown ocupa todo el ancho */
+        margin-right: 0;
+        border-top: 1px solid #e0e0e0; /* Similar a los otros enlaces */
+        padding: 0.8rem 1.5rem;
+    }
+
+    .dropdown-toggle {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0; /* Ya tiene padding en el contenedor del dropdown */
+    }
+
+    .dropdown-menu {
+        position: static; /* Cambia a posición estática en móvil */
+        width: 100%; /* Ocupa todo el ancho disponible */
+        box-shadow: none; /* Sin sombra */
+        border-radius: 0;
+        margin-top: 0;
+        border-top: 1px solid #e0e0e0; /* Separador */
+    }
+
+    .dropdown-menu a,
+    .dropdown-menu button {
+        padding-left: 2.5rem; /* Indenta las opciones del dropdown */
+        border-top: none; /* Evita doble borde si el contenedor ya lo tiene */
+    }
+
+    /* Opcional: Rotar la flecha cuando el menú está abierto */
+    .dropdown.show .dropdown-arrow {
+        transform: rotate(180deg);
+    }
+
+}
+
+
