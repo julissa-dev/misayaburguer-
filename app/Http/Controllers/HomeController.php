@@ -28,8 +28,8 @@ class HomeController extends Controller
             // donde Laravel haría una consulta a la base de datos por cada producto en el carrito.
             if ($carrito) {
                 $carritoItems = CarritoItem::with('producto') // Carga la relación 'producto'
-                                ->where('carrito_id', $carrito->id)
-                                ->get();
+                    ->where('carrito_id', $carrito->id)
+                    ->get();
 
                 // 3. Calcula el contador sumando las cantidades de los ítems del carrito.
                 // El método 'sum()' de las colecciones de Laravel es muy útil para esto.
@@ -69,8 +69,8 @@ class HomeController extends Controller
             // donde Laravel haría una consulta a la base de datos por cada producto en el carrito.
             if ($carrito) {
                 $carritoItems = CarritoItem::with('producto') // Carga la relación 'producto'
-                                ->where('carrito_id', $carrito->id)
-                                ->get();
+                    ->where('carrito_id', $carrito->id)
+                    ->get();
 
                 // 3. Calcula el contador sumando las cantidades de los ítems del carrito.
                 // El método 'sum()' de las colecciones de Laravel es muy útil para esto.
@@ -92,5 +92,23 @@ class HomeController extends Controller
     public function perfil()
     {
         return view('perfil');
+    }
+
+    public function buscarProductos(Request $request)
+    {
+        $query = $request->input('query');
+        $productos = [];
+
+        if ($query) {
+            // Asegura la búsqueda insensible a mayúsculas/minúsculas
+            // y verifica que la cantidad 'disponible' sea mayor que 0
+            $productos = Producto::whereRaw('LOWER(nombre) LIKE ?', ['%' . strtolower($query) . '%'])
+                ->where('disponible', '>', 0) // <-- CAMBIO AQUÍ
+                ->limit(10)
+                ->get();
+        }
+
+        // Devolver los productos como JSON
+        return response()->json($productos);
     }
 }

@@ -114,7 +114,8 @@
             });
 
             function updateCartUI(response) {
-                if (response && response.itemsHtml !== undefined && response.totalPrice !== undefined && response.totalQuantity !== undefined) {
+                if (response && response.itemsHtml !== undefined && response.totalPrice !== undefined && response
+                    .totalQuantity !== undefined) {
                     cartDropdownItems.innerHTML = response.itemsHtml;
                     cartTotalPriceElement.textContent = `$${response.totalPrice.toFixed(2)}`;
                     cartCountElement.textContent = response.totalQuantity;
@@ -146,7 +147,9 @@
                                 const response = await fetch(`/carrito/remover/${itemId}`, {
                                     method: 'DELETE',
                                     headers: {
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        'X-CSRF-TOKEN': document.querySelector(
+                                            'meta[name="csrf-token"]').getAttribute(
+                                            'content'),
                                         'Content-Type': 'application/json',
                                         'Accept': 'application/json'
                                     }
@@ -154,19 +157,23 @@
 
                                 if (!response.ok) {
                                     const errorData = await response.json();
-                                    throw new Error(errorData.message || 'Error al eliminar el producto');
+                                    throw new Error(errorData.message ||
+                                        'Error al eliminar el producto');
                                 }
 
                                 const data = await response.json();
                                 if (data.success) {
                                     updateCartUI(data);
-                                    Swal.fire('Eliminado!', 'El producto ha sido eliminado del carrito.', 'success');
+                                    Swal.fire('Eliminado!',
+                                        'El producto ha sido eliminado del carrito.', 'success');
                                 } else {
-                                    Swal.fire('Error', data.message || 'No se pudo eliminar el producto.', 'error');
+                                    Swal.fire('Error', data.message ||
+                                        'No se pudo eliminar el producto.', 'error');
                                 }
                             } catch (error) {
                                 console.error('Error al eliminar del carrito:', error);
-                                Swal.fire('Error', 'Hubo un problema al eliminar el producto: ' + error.message, 'error');
+                                Swal.fire('Error', 'Hubo un problema al eliminar el producto: ' +
+                                    error.message, 'error');
                             }
                         }
                     });
@@ -181,11 +188,14 @@
                         const response = await fetch(`/carrito/actualizar/${itemId}`, {
                             method: 'PUT',
                             headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content'),
                                 'Content-Type': 'application/json',
                                 'Accept': 'application/json'
                             },
-                            body: JSON.stringify({ action: action })
+                            body: JSON.stringify({
+                                action: action
+                            })
                         });
 
                         if (!response.ok) {
@@ -201,7 +211,8 @@
                         }
                     } catch (error) {
                         console.error('Error al actualizar cantidad:', error);
-                        Swal.fire('Error', 'Hubo un problema al actualizar la cantidad: ' + error.message, 'error');
+                        Swal.fire('Error', 'Hubo un problema al actualizar la cantidad: ' + error.message,
+                            'error');
                     }
                 }
             });
@@ -213,11 +224,133 @@
                         const response = await fetch('/carrito/añadir', {
                             method: 'POST',
                             headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]').getAttribute('content'),
                                 'Content-Type': 'application/json',
                                 'Accept': 'application/json'
                             },
-                            body: JSON.stringify({ producto_id: productId, cantidad: 1 })
+                            body: JSON.stringify({
+                                producto_id: productId,
+                                cantidad: 1
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message ||
+                                'Error al añadir el producto al carrito');
+                        }
+
+                        const data = await response.json();
+                        if (data.success) {
+                            updateCartUI(data);
+                            Swal.fire('Añadido!', 'Producto añadido al carrito.', 'success');
+                        } else {
+                            Swal.fire('Error', data.message ||
+                                'No se pudo añadir el producto al carrito.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error al añadir al carrito:', error);
+                        Swal.fire('Error', 'Hubo un problema al añadir el producto: ' + error.message,
+                            'error');
+                    }
+                });
+            });
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        const searchResultsDiv = document.getElementById('searchResults');
+        let searchTimeout;
+
+        if (searchInput && searchResultsDiv) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout); // Limpiar el timeout anterior
+                const query = this.value.trim();
+
+                if (query.length > 0) {
+                    // Pequeño retardo para no hacer una petición por cada letra
+                    searchTimeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch(
+                                `/api/productos/buscar?query=${encodeURIComponent(query)}`, {
+                                    headers: {
+                                        'Accept': 'application/json'
+                                    }
+                                });
+
+                            if (!response.ok) {
+                                throw new Error('Error al buscar productos.');
+                            }
+
+                            const products = await response.json();
+                            displaySearchResults(products);
+                        } catch (error) {
+                            console.error('Error en la búsqueda:', error);
+                            searchResultsDiv.innerHTML =
+                                '<p class="no-results">Error al cargar resultados.</p>';
+                            searchResultsDiv.classList.add('show');
+                        }
+                    }, 300); // Espera 300ms después de que el usuario deja de escribir
+                } else {
+                    searchResultsDiv.innerHTML = '';
+                    searchResultsDiv.classList.remove('show');
+                }
+            });
+
+            // Ocultar resultados si se hace clic fuera del input y del dropdown
+            document.addEventListener('click', function(event) {
+                if (!searchInput.contains(event.target) && !searchResultsDiv.contains(event.target)) {
+                    searchResultsDiv.classList.remove('show');
+                }
+            });
+
+            function displaySearchResults(products) {
+                searchResultsDiv.innerHTML = ''; // Limpiar resultados anteriores
+
+                if (products.length === 0) {
+                    searchResultsDiv.innerHTML = '<p class="no-results">No se encontraron productos.</p>';
+                } else {
+                    products.forEach(product => {
+                        const productHtml = `
+                        <div class="search-result-item">
+                            <img src="${product.imagen_url || 'img/placeholder.png'}" alt="${product.nombre}">
+                            <div class="details">
+                                <h4>${product.nombre}</h4>
+                                <p>$${parseFloat(product.precio).toFixed(2)}</p>
+                            </div>
+                            <div class="actions">
+                                <button class="btn-add-to-cart-search" data-product-id="${product.id}">Añadir</button>
+                                <a href="/productos/${product.id}" class="btn-view-details">Ver</a>
+                            </div>
+                        </div>
+                    `;
+                        searchResultsDiv.insertAdjacentHTML('beforeend', productHtml);
+                    });
+                }
+                searchResultsDiv.classList.add('show'); // Mostrar el dropdown
+            }
+
+            // Delegación de eventos para los botones de añadir al carrito en los resultados de búsqueda
+            searchResultsDiv.addEventListener('click', async function(event) {
+                const target = event.target;
+
+                if (target.classList.contains('btn-add-to-cart-search')) {
+                    const productId = target.dataset.productId;
+                    if (!productId) return;
+
+                    try {
+                        const response = await fetch('/carrito/añadir', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content'),
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                producto_id: productId,
+                                cantidad: 1
+                            })
                         });
 
                         if (!response.ok) {
@@ -227,16 +360,21 @@
 
                         const data = await response.json();
                         if (data.success) {
-                            updateCartUI(data);
+                            updateCartUI(data); // Reutiliza la función existente para actualizar el carrito
                             Swal.fire('Añadido!', 'Producto añadido al carrito.', 'success');
                         } else {
-                            Swal.fire('Error', data.message || 'No se pudo añadir el producto al carrito.', 'error');
+                            Swal.fire('Error', data.message || 'No se pudo añadir el producto al carrito.',
+                                'error');
                         }
                     } catch (error) {
-                        console.error('Error al añadir al carrito:', error);
+                        console.error('Error al añadir al carrito desde la búsqueda:', error);
                         Swal.fire('Error', 'Hubo un problema al añadir el producto: ' + error.message, 'error');
                     }
-                });
+                }
+                // Los enlaces "Ver" ya funcionan por sí solos porque son <a> tags.
+                // Asegúrate de tener una ruta `/productos/{id}` en tu `web.php`
+                // y un controlador para mostrar los detalles del producto.
+                // Por ejemplo: Route::get('/productos/{id}', [ProductoController::class, 'show'])->name('productos.show');
             });
         }
     </script>

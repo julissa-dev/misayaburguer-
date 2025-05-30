@@ -7,7 +7,10 @@
 
     <div class="acciones">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="¿Qué necesitas?" />
+        <input type="text" id="searchInput" placeholder="¿Qué necesitas?" autocomplete="off" />
+        <div id="searchResults" class="search-results-dropdown">
+            {{-- Los resultados de la búsqueda se inyectarán aquí --}}
+        </div>
     </div>
 
     <button class="menu-toggle" aria-label="Abrir menú">

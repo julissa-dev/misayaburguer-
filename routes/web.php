@@ -29,6 +29,7 @@ Route::delete('/carrito/remover/{carritoItem}', [CarritoController::class, 'remo
 
 Route::put('/carrito/actualizar/{carritoItem}', [CarritoController::class, 'updateQuantity'])->name('carrito.updateQuantity');
 
+Route::get('/api/productos/buscar', [HomeController::class, 'buscarProductos'])->name('api.productos.buscar');
 
 Route::get('prueba', function () {
     

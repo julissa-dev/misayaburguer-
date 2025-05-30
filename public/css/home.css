@@ -174,7 +174,7 @@ body {
     position: absolute;
     background-color: white;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 101;
     border-radius: 5px;
     overflow: hidden;
@@ -348,7 +348,8 @@ body {
     margin-bottom: 0.2rem;
 }
 
-.cart-item .item-quantity { /* Puedes ocultar este si el span con los botones lo reemplaza */
+.cart-item .item-quantity {
+    /* Puedes ocultar este si el span con los botones lo reemplaza */
     font-size: 0.85rem;
     color: #666;
     display: none; /* Ahora la cantidad se mostrará en el span dentro de item-quantity-controls */
@@ -392,7 +393,8 @@ body {
     background-color: #4b1a77;
 }
 
-.item-quantity-controls .item-quantity { /* Esta es la cantidad mostrada entre los botones */
+.item-quantity-controls .item-quantity {
+    /* Esta es la cantidad mostrada entre los botones */
     font-size: 0.9rem;
     font-weight: bold;
     color: #2e0c4c;
@@ -420,7 +422,6 @@ body {
 }
 
 /* Fin de estilos de ítems del carrito */
-
 
 .cart-dropdown-footer {
     padding: 1rem;
@@ -458,6 +459,108 @@ body {
 .cart-dropdown-footer .btn-checkout:hover {
     background-color: #4b1a77;
     transform: none;
+}
+
+.acciones {
+    position: relative; /* Importante para el posicionamiento del dropdown */
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: 100%; /* Debajo del input */
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    max-height: 300px; /* Limita la altura y añade scroll */
+    overflow-y: auto;
+    display: none; /* Oculto por defecto */
+}
+
+.search-results-dropdown.show {
+    display: block;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: #f9f9f9;
+}
+
+.search-result-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 4px;
+}
+
+.search-result-item .details {
+    flex-grow: 1;
+}
+
+.search-result-item .details h4 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    color: #333;
+}
+
+.search-result-item .details p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.search-result-item .actions {
+    display: flex;
+    gap: 5px;
+}
+
+.search-result-item .actions .btn-add-to-cart-search,
+.search-result-item .actions .btn-view-details {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.search-result-item .actions .btn-add-to-cart-search {
+    background-color: #28a745;
+    color: white;
+}
+
+.search-result-item .actions .btn-view-details {
+    background-color: #007bff;
+    color: white;
+}
+
+.search-result-item .actions .btn-add-to-cart-search:hover {
+    background-color: #218838;
+}
+
+.search-result-item .actions .btn-view-details:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo para cuando no hay resultados */
+.search-results-dropdown p.no-results {
+    padding: 10px;
+    text-align: center;
+    color: #888;
 }
 
 /* Media Queries para Responsividad */
@@ -604,7 +707,9 @@ body {
     }
 
     .cart-item .item-details {
-        flex-basis: calc(100% - 70px); /* Ocupa el resto del espacio junto a la imagen */
+        flex-basis: calc(
+            100% - 70px
+        ); /* Ocupa el resto del espacio junto a la imagen */
         align-items: flex-start;
     }
 
