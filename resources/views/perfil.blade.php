@@ -14,61 +14,12 @@
 
 <body>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <header class="navbar">
-        <div class="logo">
-            <a href="{{ route('home') }}">
-                <img src="img/front/log.png" alt="Logo del sitio" />
-            </a>
-        </div>
-
-        <div class="acciones">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="¿Qué necesitas?" />
-        </div>
-
-        <button class="menu-toggle" aria-label="Abrir menú">
-            <i class="fa-solid fa-bars"></i>
-        </button>
-
-        <nav class="nav-links">
-            <a href="{{ route('menu') }}" class="{{ Request::routeIs('menu') ? 'active-link' : '' }}"><i class="fa-solid fa-burger"></i> MENU</a>
-            <a href="#"><i class="fa-solid fa-percent"></i> PROMOCIONES</a>
-            <a href="#"><i class="fas fa-bicycle"></i> Delivery a domicilio <i
-                    class="fas fa-chevron-down"></i></a>
-
-            @auth {{-- Si el usuario está autenticado --}}
-                <div class="dropdown">
-                    <a href="#"
-                        class="dropdown-toggle {{ Request::routeIs('perfil') || Request::routeIs('pedido') ? 'active-link' : '' }}"
-                        id="userDropdownToggle">
-                        <i class="fa-solid fa-user"></i> {{ Auth::user()->nombre }} <i
-                            class="fas fa-chevron-down dropdown-arrow"></i>
-                    </a>
-                    <div class="dropdown-menu" id="userDropdownMenu">
-                        {{-- Enlace Perfil: Activo si la ruta actual es 'profile' --}}
-                        <a href="{{ route('perfil') }}"
-                            class="{{ Request::routeIs('perfil') ? 'active-link' : '' }}">Perfil</a>
-                        {{-- Enlace Mis Pedidos: Activo si la ruta actual es 'orders' --}}
-                        <a href="{{ route('pedido') }}" class="{{ Request::routeIs('pedido') ? 'active-link' : '' }}">Mis
-                            Pedidos</a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit">Cerrar Sesión</button>
-                        </form>
-                    </div>
-                </div>
-            @endauth
-
-
-            @guest {{-- Si el usuario NO está autenticado --}}
-                <a href="{{ route('login') }}"><i class="fa-solid fa-user"></i> INGRESAR</a>
-            @endguest
-
-            <button class="cart"><i class="fa-solid fa-cart-shopping"></i><span class="cart-count">0</span></button>
-        </nav>
-    </header>
+    {{-- Incluye la plantilla del header --}}
+    @include('partials.header', [
+        'contador' => $contador ?? 0, // Asegúrate de pasar estas variables si no están disponibles globalmente
+        'carritoItems' => $carritoItems ?? collect(),
+        'totalPrice' => $totalPrice ?? 0,
+    ])
 
     
     
@@ -82,17 +33,15 @@
             nav.classList.toggle('active');
         });
 
-        // --- JavaScript para el Dropdown del Usuario ---
         const userDropdownToggle = document.getElementById('userDropdownToggle');
         const userDropdownMenu = document.getElementById('userDropdownMenu');
 
-        if (userDropdownToggle && userDropdownMenu) { // Asegura que los elementos existan (si el usuario está logueado)
+        if (userDropdownToggle && userDropdownMenu) {
             userDropdownToggle.addEventListener('click', function(event) {
-                event.preventDefault(); // Evita que el enlace redirija
-                userDropdownMenu.classList.toggle('show'); // Alterna la clase 'show'
+                event.preventDefault();
+                userDropdownMenu.classList.toggle('show');
             });
 
-            // Cerrar el dropdown si se hace clic fuera de él
             window.addEventListener('click', function(event) {
                 if (!userDropdownToggle.contains(event.target) && !userDropdownMenu.contains(event.target)) {
                     if (userDropdownMenu.classList.contains('show')) {
@@ -101,14 +50,12 @@
                 }
             });
         }
-        // --- Fin JavaScript para el Dropdown del Usuario ---
-
 
         const logoutForm = document.getElementById('logout-form');
 
-        if (logoutForm) { // Asegúrate de que el formulario exista en la página
+        if (logoutForm) {
             logoutForm.addEventListener('submit', function(event) {
-                event.preventDefault(); // Detener el envío del formulario por defecto
+                event.preventDefault();
 
                 Swal.fire({
                     title: '¿Estás seguro?',
@@ -121,13 +68,367 @@
                     cancelButtonText: 'No, cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // Si el usuario confirma, enviar el formulario manualmente
-                        this.submit(); // 'this' se refiere al formulario 'logoutForm'
+                        this.submit();
                     }
                 });
             });
         }
-        
+
+        const cartButton = document.getElementById('cartButton');
+        const cartDropdown = document.getElementById('cartDropdown');
+        const closeCartBtn = document.getElementById('closeCartBtn');
+        const cartDropdownItems = document.getElementById('cartDropdownItems');
+        const cartTotalPriceElement = document.getElementById('cartTotalPrice');
+        const cartCountElement = document.querySelector('.cart-count');
+
+        if (cartButton && cartDropdown) {
+            cartButton.addEventListener('click', function(event) {
+                event.stopPropagation();
+                cartDropdown.classList.toggle('show-cart');
+            });
+
+            closeCartBtn.addEventListener('click', function() {
+                cartDropdown.classList.remove('show-cart');
+            });
+
+            window.addEventListener('click', function(event) {
+                if (!cartButton.contains(event.target) && !cartDropdown.contains(event.target)) {
+                    if (cartDropdown.classList.contains('show-cart')) {
+                        cartDropdown.classList.remove('show-cart');
+                    }
+                }
+            });
+
+            function updateCartUI(response) {
+                if (response && response.itemsHtml !== undefined && response.totalPrice !== undefined && response
+                    .totalQuantity !== undefined) {
+                    cartDropdownItems.innerHTML = response.itemsHtml;
+                    cartTotalPriceElement.textContent = `$${response.totalPrice.toFixed(2)}`;
+                    cartCountElement.textContent = response.totalQuantity;
+                } else {
+                    console.error('Respuesta AJAX inválida:', response);
+                    Swal.fire('Error', 'No se pudo actualizar el carrito. Datos incompletos.', 'error');
+                }
+            }
+
+            cartDropdownItems.addEventListener('click', async function(event) {
+                const target = event.target;
+
+                if (target.classList.contains('remove-item-btn')) {
+                    const itemId = target.dataset.itemId;
+                    if (!itemId) return;
+
+                    Swal.fire({
+                        title: '¿Eliminar producto?',
+                        text: "¿Estás seguro de que quieres quitar este producto del carrito?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Sí, eliminar',
+                        cancelButtonText: 'Cancelar'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const response = await fetch(`/carrito/remover/${itemId}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': document.querySelector(
+                                            'meta[name="csrf-token"]').getAttribute(
+                                            'content'),
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json'
+                                    }
+                                });
+
+                                if (!response.ok) {
+                                    const errorData = await response.json();
+                                    throw new Error(errorData.message ||
+                                        'Error al eliminar el producto');
+                                }
+
+                                const data = await response.json();
+                                if (data.success) {
+                                    updateCartUI(data);
+                                    Swal.fire('Eliminado!',
+                                        'El producto ha sido eliminado del carrito.', 'success');
+                                } else {
+                                    Swal.fire('Error', data.message ||
+                                        'No se pudo eliminar el producto.', 'error');
+                                }
+                            } catch (error) {
+                                console.error('Error al eliminar del carrito:', error);
+                                Swal.fire('Error', 'Hubo un problema al eliminar el producto: ' +
+                                    error.message, 'error');
+                            }
+                        }
+                    });
+                }
+
+                if (target.classList.contains('quantity-btn')) {
+                    const itemId = target.dataset.itemId;
+                    const action = target.dataset.action;
+                    if (!itemId || !action) return;
+
+                    try {
+                        const response = await fetch(`/carrito/actualizar/${itemId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content'),
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                action: action
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || 'Error al actualizar la cantidad');
+                        }
+
+                        const data = await response.json();
+                        if (data.success) {
+                            updateCartUI(data);
+                        } else {
+                            Swal.fire('Error', data.message || 'No se pudo actualizar la cantidad.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error al actualizar cantidad:', error);
+                        Swal.fire('Error', 'Hubo un problema al actualizar la cantidad: ' + error.message,
+                            'error');
+                    }
+                }
+            });
+
+            document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const productId = this.dataset.productId;
+                    try {
+                        const response = await fetch('/carrito/añadir', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector(
+                                    'meta[name="csrf-token"]').getAttribute('content'),
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                producto_id: productId,
+                                cantidad: 1
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message ||
+                                'Error al añadir el producto al carrito');
+                        }
+
+                        const data = await response.json();
+                        if (data.success) {
+                            updateCartUI(data);
+                            Swal.fire('Añadido!', 'Producto añadido al carrito.', 'success');
+                        } else {
+                            Swal.fire('Error', data.message ||
+                                'No se pudo añadir el producto al carrito.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error al añadir al carrito:', error);
+                        Swal.fire('Error', 'Hubo un problema al añadir el producto: ' + error.message,
+                            'error');
+                    }
+                });
+            });
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        const searchResultsDiv = document.getElementById('searchResults');
+        let searchTimeout;
+
+        if (searchInput && searchResultsDiv) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout); // Limpiar el timeout anterior
+                const query = this.value.trim();
+
+                if (query.length > 0) {
+                    // Pequeño retardo para no hacer una petición por cada letra
+                    searchTimeout = setTimeout(async () => {
+                        try {
+                            const response = await fetch(
+                                `/api/productos/buscar?query=${encodeURIComponent(query)}`, {
+                                    headers: {
+                                        'Accept': 'application/json'
+                                    }
+                                });
+
+                            if (!response.ok) {
+                                throw new Error('Error al buscar productos.');
+                            }
+
+                            const products = await response.json();
+                            displaySearchResults(products);
+                        } catch (error) {
+                            console.error('Error en la búsqueda:', error);
+                            searchResultsDiv.innerHTML =
+                                '<p class="no-results">Error al cargar resultados.</p>';
+                            searchResultsDiv.classList.add('show');
+                        }
+                    }, 300); // Espera 300ms después de que el usuario deja de escribir
+                } else {
+                    searchResultsDiv.innerHTML = '';
+                    searchResultsDiv.classList.remove('show');
+                }
+            });
+
+            // Ocultar resultados si se hace clic fuera del input y del dropdown
+            document.addEventListener('click', function(event) {
+                if (!searchInput.contains(event.target) && !searchResultsDiv.contains(event.target)) {
+                    searchResultsDiv.classList.remove('show');
+                }
+            });
+
+            function displaySearchResults(products) {
+                searchResultsDiv.innerHTML = ''; // Limpiar resultados anteriores
+
+                if (products.length === 0) {
+                    searchResultsDiv.innerHTML = '<p class="no-results">No se encontraron productos.</p>';
+                } else {
+                    products.forEach(product => {
+                        const productHtml = `
+                        <div class="search-result-item">
+                            <img src="${product.imagen_url || 'img/placeholder.png'}" alt="${product.nombre}">
+                            <div class="details">
+                                <h4>${product.nombre}</h4>
+                                <p>$${parseFloat(product.precio).toFixed(2)}</p>
+                            </div>
+                            <div class="actions">
+                                <button class="btn-add-to-cart-search" data-product-id="${product.id}">Añadir</button>
+                                <a href="/productos/${product.id}" class="btn-view-details">Ver</a>
+                            </div>
+                        </div>
+                    `;
+                        searchResultsDiv.insertAdjacentHTML('beforeend', productHtml);
+                    });
+                }
+                searchResultsDiv.classList.add('show'); // Mostrar el dropdown
+            }
+
+            // Delegación de eventos para los botones de añadir al carrito en los resultados de búsqueda
+            searchResultsDiv.addEventListener('click', async function(event) {
+                const target = event.target;
+
+                if (target.classList.contains('btn-add-to-cart-search')) {
+                    const productId = target.dataset.productId;
+                    if (!productId) return;
+
+                    try {
+                        const response = await fetch('/carrito/añadir', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content'),
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                producto_id: productId,
+                                cantidad: 1
+                            })
+                        });
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.message || 'Error al añadir el producto al carrito');
+                        }
+
+                        const data = await response.json();
+                        if (data.success) {
+                            updateCartUI(data); // Reutiliza la función existente para actualizar el carrito
+                            Swal.fire('Añadido!', 'Producto añadido al carrito.', 'success');
+                        } else {
+                            Swal.fire('Error', data.message || 'No se pudo añadir el producto al carrito.',
+                                'error');
+                        }
+                    } catch (error) {
+                        console.error('Error al añadir al carrito desde la búsqueda:', error);
+                        Swal.fire('Error', 'Hubo un problema al añadir el producto: ' + error.message, 'error');
+                    }
+                }
+                // Los enlaces "Ver" ya funcionan por sí solos porque son <a> tags.
+                // Asegúrate de tener una ruta `/productos/{id}` en tu `web.php`
+                // y un controlador para mostrar los detalles del producto.
+                // Por ejemplo: Route::get('/productos/{id}', [ProductoController::class, 'show'])->name('productos.show');
+            });
+
+            // INICIO: Nuevo código para el dropdown de Delivery
+            const deliveryToggle = document.getElementById('deliveryToggle');
+            const deliveryDropdownMenu = document.getElementById('deliveryDropdownMenu'); // Usamos el ID del HTML
+            const closeDeliveryBtn = document.getElementById('closeDeliveryBtn');
+            const manageAddressBtn = document.getElementById('manageAddressBtn');
+            const btnLoginBtn = document.getElementById('btnLoginBtn');
+
+            if (deliveryToggle && deliveryDropdownMenu && closeDeliveryBtn) {
+                deliveryToggle.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    deliveryDropdownMenu.classList.toggle('show');
+                    // Cierra otros dropdowns si están abiertos
+                    if (userDropdownMenu) userDropdownMenu.classList.remove('show');
+                    if (cartDropdown) cartDropdown.classList.remove('show-cart');
+                });
+
+                closeDeliveryBtn.addEventListener('click', function() {
+                    deliveryDropdownMenu.classList.remove('show');
+                });
+
+                // Ocultar dropdown si se hace clic fuera de él
+                document.addEventListener('click', function(event) {
+                    // Asegúrate de que el clic no fue dentro del deliveryDropdownMenu o en el deliveryToggle
+                    if (!deliveryDropdownMenu.contains(event.target) && !deliveryToggle.contains(event.target)) {
+                        if (deliveryDropdownMenu.classList.contains('show')) {
+                            deliveryDropdownMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+
+            // Manejo del botón "Agregar Dirección" / "Cambiar Dirección"
+            if (manageAddressBtn) {
+                manageAddressBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    // Redireccionar a la página de perfil para gestionar la dirección
+                    // Asegúrate que 'perfil' sea la ruta nombrada a tu vista de perfil
+                    window.location.href = "{{ route('perfil') }}";
+                });
+            }
+            if (btnLoginBtn) {
+                btnLoginBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    // Redireccionar a la página de perfil para gestionar la dirección
+                    // Asegúrate que 'perfil' sea la ruta nombrada a tu vista de perfil
+                    window.location.href = "{{ route('login') }}";
+                });
+            }
+
+            // Opcional: Función global para actualizar la UI de la dirección si se guarda vía AJAX desde otro lugar
+            // Por ejemplo, si tienes un modal en la página de perfil que actualiza la dirección sin recargar la página.
+            window.updateDeliveryAddressUI = function(newAddress) {
+                const addressSpan = document.getElementById('currentDeliveryAddress');
+                const manageBtn = document.getElementById('manageAddressBtn');
+                if (addressSpan) {
+                    if (newAddress) {
+                        addressSpan.innerHTML = `Tu dirección actual: <strong>${newAddress}</strong>`;
+                        if (manageBtn) manageBtn.textContent = 'Cambiar Dirección';
+                    } else {
+                        addressSpan.innerHTML = `No tienes una dirección registrada.`;
+                        if (manageBtn) manageBtn.textContent = 'Agregar Dirección';
+                    }
+                }
+            };
+            // FIN: Nuevo código para el dropdown de Delivery
+        }
     </script>
 </body>
 

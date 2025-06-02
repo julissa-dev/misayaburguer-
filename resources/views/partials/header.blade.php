@@ -22,7 +22,64 @@
             <i class="fa-solid fa-burger"></i> MENU
         </a>
         <a href="#"><i class="fa-solid fa-percent"></i> PROMOCIONES</a>
-        <a href="#"><i class="fas fa-bicycle"></i> Delivery a domicilio <i class="fas fa-chevron-down"></i></a>
+        {{-- INICIO: Dropdown de Delivery a Domicilio --}}
+        <div class="dropdown"> {{-- Reutilizamos la clase 'dropdown' que ya tienes --}}
+            <a href="#" id="deliveryToggle" class="dropdown-toggle"> {{-- Usamos dropdown-toggle --}}
+                <i class="fas fa-bicycle"></i> Delivery a domicilio <i class="fas fa-chevron-down dropdown-arrow"></i>
+            </a>
+            <div class="dropdown-menu" id="deliveryDropdownMenu"> {{-- Usamos dropdown-menu --}}
+                <div class="delivery-dropdown-header">
+                    <h3>Información de Envío</h3>
+                    <button class="close-delivery-btn" id="closeDeliveryBtn">&times;</button>
+                </div>
+
+                <div class="delivery-dropdown-content">
+                    @auth
+                        {{-- La dirección actual del usuario --}}
+                        <p class="user-delivery-address">
+                            @if (Auth::user()->direccion)
+                                <i class="fas fa-map-marker-alt"></i> Tu dirección actual: <br> <strong id="currentDeliveryAddress">{{ Auth::user()->direccion }}</strong>
+                            @else
+                                <i class="fas fa-exclamation-triangle"></i> <span id="currentDeliveryAddress">No tienes una dirección registrada.</span>
+                            @endif
+                        </p>
+                        <button class="btn-manage-address" id="manageAddressBtn">
+                            @if (Auth::user()->direccion)
+                                Cambiar Dirección
+                            @else
+                                Agregar Dirección
+                            @endif
+                        </button>
+                    @endauth
+                    @guest
+                        <p class="no-address">
+                            <i class="fas fa-info-circle"></i> Inicia sesión para gestionar tu dirección de envío.
+                        </p>
+                        <button class="btn-manage-address" id="btnLoginBtn">
+                            Iniciar Sesión
+                        </button>
+                    @endguest
+
+                    <hr>
+
+                    <div class="delivery-info-section">
+                        <h4>Detalles del Envío en Trujillo</h4>
+                        <p><i class="fas fa-money-bill-wave"></i> Costo de Envío: <span class="delivery-price">S/ 7.00</span></p> {{-- Precio fijo --}}
+                        <p><i class="fas fa-clock"></i> Horario de Delivery: <span class="delivery-time">Lunes a Domingo: 6:00 PM - 1:00 AM</span></p>
+                        <p><i class="fas fa-motorcycle"></i> Tiempo Estimado: <span class="delivery-estimate">30 - 45 minutos (puede variar según la zona y la demanda)</span></p>
+                        <p><i class="fas fa-dollar-sign"></i> Cancelar antes del envío</p>
+                        <p class="small-text">
+                            <i class="fas fa-exclamation-triangle"></i> Zonas de Cobertura: Nuestro servicio de delivery cubre todo Trujillo.
+                        </p>
+                    </div>
+
+                    
+                    
+                </div>
+            </div>
+        </div>
+        {{-- FIN: Dropdown de Delivery a Domicilio --}}
+        
         @auth {{-- Si el usuario está autenticado --}}
             <div class="dropdown">
                 <a href="#"

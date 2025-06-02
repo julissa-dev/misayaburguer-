@@ -361,6 +361,72 @@
                 // y un controlador para mostrar los detalles del producto.
                 // Por ejemplo: Route::get('/productos/{id}', [ProductoController::class, 'show'])->name('productos.show');
             });
+
+            // INICIO: Nuevo código para el dropdown de Delivery
+            const deliveryToggle = document.getElementById('deliveryToggle');
+            const deliveryDropdownMenu = document.getElementById('deliveryDropdownMenu'); // Usamos el ID del HTML
+            const closeDeliveryBtn = document.getElementById('closeDeliveryBtn');
+            const manageAddressBtn = document.getElementById('manageAddressBtn');
+            const btnLoginBtn = document.getElementById('btnLoginBtn');
+
+            if (deliveryToggle && deliveryDropdownMenu && closeDeliveryBtn) {
+                deliveryToggle.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    deliveryDropdownMenu.classList.toggle('show');
+                    // Cierra otros dropdowns si están abiertos
+                    if (userDropdownMenu) userDropdownMenu.classList.remove('show');
+                    if (cartDropdown) cartDropdown.classList.remove('show-cart');
+                });
+
+                closeDeliveryBtn.addEventListener('click', function() {
+                    deliveryDropdownMenu.classList.remove('show');
+                });
+
+                // Ocultar dropdown si se hace clic fuera de él
+                document.addEventListener('click', function(event) {
+                    // Asegúrate de que el clic no fue dentro del deliveryDropdownMenu o en el deliveryToggle
+                    if (!deliveryDropdownMenu.contains(event.target) && !deliveryToggle.contains(event.target)) {
+                        if (deliveryDropdownMenu.classList.contains('show')) {
+                            deliveryDropdownMenu.classList.remove('show');
+                        }
+                    }
+                });
+            }
+
+            // Manejo del botón "Agregar Dirección" / "Cambiar Dirección"
+            if (manageAddressBtn) {
+                manageAddressBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    // Redireccionar a la página de perfil para gestionar la dirección
+                    // Asegúrate que 'perfil' sea la ruta nombrada a tu vista de perfil
+                    window.location.href = "{{ route('perfil') }}";
+                });
+            }
+            if (btnLoginBtn) {
+                btnLoginBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    // Redireccionar a la página de perfil para gestionar la dirección
+                    // Asegúrate que 'perfil' sea la ruta nombrada a tu vista de perfil
+                    window.location.href = "{{ route('login') }}";
+                });
+            }
+
+            // Opcional: Función global para actualizar la UI de la dirección si se guarda vía AJAX desde otro lugar
+            // Por ejemplo, si tienes un modal en la página de perfil que actualiza la dirección sin recargar la página.
+            window.updateDeliveryAddressUI = function(newAddress) {
+                const addressSpan = document.getElementById('currentDeliveryAddress');
+                const manageBtn = document.getElementById('manageAddressBtn');
+                if (addressSpan) {
+                    if (newAddress) {
+                        addressSpan.innerHTML = `Tu dirección actual: <strong>${newAddress}</strong>`;
+                        if (manageBtn) manageBtn.textContent = 'Cambiar Dirección';
+                    } else {
+                        addressSpan.innerHTML = `No tienes una dirección registrada.`;
+                        if (manageBtn) manageBtn.textContent = 'Agregar Dirección';
+                    }
+                }
+            };
+            // FIN: Nuevo código para el dropdown de Delivery
         }
     </script>
 </body>
