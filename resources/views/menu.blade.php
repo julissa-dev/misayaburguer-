@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Saya Burguer</title>
-    <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/menu.css" />
     <script src="https://kit.fontawesome.com/a2d4f54cbc.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -20,22 +20,65 @@
         'totalPrice' => $totalPrice ?? 0,
     ])
 
-    {{-- Tu contenido principal de la página home iría aquí --}}
-    <main>
-        <h1>Bienvenido a Saya Burguer</h1>
-        <p>Explora nuestras deliciosas opciones.</p>
-        <div class="product-grid">
-            @foreach ($productos as $producto)
-                <div class="product-card">
-                    <img src="{{ asset($producto->imagen_url) }}" alt="{{ $producto->nombre }}">
-                    <h3>{{ $producto->nombre }}</h3>
-                    <p>{{ $producto->descripcion }}</p>
-                    <span class="price">${{ number_format($producto->precio, 2) }}</span>
-                    <button class="btn-add-to-cart" data-product-id="{{ $producto->id }}">Añadir al Carrito</button>
-                </div>
-            @endforeach
-        </div>
+
+    <section class="categorias-menu">
+
+        {{-- Botón "Ver todo" siempre al inicio --}}
+        <button class="categoria-item active">
+            <div class="circle-texto">Ver todo</div>
+            <span>Ver todo</span>
+        </button>
+
+        {{-- Iterar por las categorías --}}
+        @foreach ($categorias as $categoria)
+            @php
+                $imagenes = [
+                    'hamburguesa' => 'hamburguesa.png',
+                    'bebida' => 'bebida.jpg',
+                    
+                ];
+                $imagenUrl = $imagenes[$categoria] ?? 'default.jpg';
+            @endphp
+
+            <button class="categoria-item">
+                <img src="{{ asset('img/categoria/' . $imagenUrl) }}" alt="{{ $categoria }}">
+                <span>{{ $categoria }}</span>
+            </button>
+        @endforeach
+    </section>
+
+    <main class="catalogo">
+        <aside class="filtros">
+            <h3>Filtrar por:</h3>
+            <p><strong>Precios:</strong></p>
+            <label><input type="checkbox" /> Hasta S/20</label>
+            <label><input type="checkbox" /> Hasta S/21 - 30</label>
+            <label><input type="checkbox" /> Hasta S/31 - 50</label>
+            <label><input type="checkbox" /> S/51 +</label>
+        </aside>
+
+        <section class="productos">
+            <h2>NUESTRA CARTA</h2>
+            <div class="grid-productos">
+                @foreach ($productos as $producto)
+                    <div class="producto">
+                        <img src="{{ asset('storage/img/productos/' . $producto->imagen_url) }}"
+                            alt="{{ $producto->nombre }}" />
+                        <h4>{{ $producto->nombre }}</h4>
+                        <p>Al precio de:</p>
+                        <strong class="precio">S/{{ number_format($producto->precio, 2, ',', '.') }}</strong>
+                        <button class="btn-agregar" data-producto-id="{{ $producto->id }}">Agregar</button>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="paginacion">
+                {{ $productos->links('pagination::default') }}
+            </div>
+        </section>
     </main>
+
+
 
     {{-- Tu JavaScript puede quedarse en el archivo principal si es específico de la página,
          o moverlo a un archivo .js externo si es global. --}}
@@ -217,9 +260,9 @@
                 }
             });
 
-            document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+            document.querySelectorAll('.btn-agregar').forEach(button => {
                 button.addEventListener('click', async function() {
-                    const productId = this.dataset.productId;
+                    const productId = this.dataset.productoId;
                     try {
                         const response = await fetch('/carrito/añadir', {
                             method: 'POST',
@@ -243,7 +286,7 @@
 
                         const data = await response.json();
                         if (data.success) {
-                            updateCartUI(data);
+                            updateCartUI(data); // Ya definida en tu script
                             Swal.fire('Añadido!', 'Producto añadido al carrito.', 'success');
                         } else {
                             Swal.fire('Error', data.message ||
@@ -256,6 +299,8 @@
                     }
                 });
             });
+
+            
         }
 
         const searchInput = document.getElementById('searchInput');

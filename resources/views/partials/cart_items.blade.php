@@ -4,7 +4,7 @@
     @foreach ($carritoItems as $item)
         @if ($item->producto)
             <div class="cart-item" data-item-id="{{ $item->id }}">
-                <img src="{{ asset($item->producto->imagen_url) }}" alt="{{ $item->producto->nombre }}">
+                <img src="{{ asset('storage/img/productos/' .$item->producto->imagen_url) }}" alt="{{ $item->producto->nombre }}">
                 <div class="item-details">
                     <span class="item-name">{{ $item->producto->nombre }}</span>
                     <div class="item-quantity-controls">

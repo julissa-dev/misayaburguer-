@@ -31,6 +31,8 @@ Route::put('/carrito/actualizar/{carritoItem}', [CarritoController::class, 'upda
 
 Route::get('/api/productos/buscar', [HomeController::class, 'buscarProductos'])->name('api.productos.buscar');
 
+Route::post('/carrito/añadir', [CarritoController::class, 'añadirProducto'])->name('carrito.añadir');
+
 Route::get('prueba', function () {
     
     // $usuario = new Usuario();

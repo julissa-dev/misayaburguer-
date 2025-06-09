@@ -84,9 +84,12 @@ class HomeController extends Controller
             }
         }
 
-        // 4. Obtén todos los productos. Si tu vista los necesita para mostrar un catálogo, por ejemplo.
-        $productos = Producto::all();
-        return view('menu', compact('contador', 'productos', 'carritoItems', 'carrito', 'totalPrice'));
+        $categorias = Producto::select('categoria')->distinct()->get()->pluck('categoria');
+
+        // 4. Obtén todos los productos paginados y que estén disponibles.
+        $productos = Producto::where('disponible', 1) // O puedes usar ->where('disponible', '>', 0)
+            ->paginate(10);
+        return view('menu', compact('contador', 'productos', 'carritoItems', 'carrito', 'totalPrice', 'categorias'));
     }
 
     public function perfil()
@@ -135,9 +138,16 @@ class HomeController extends Controller
             // Asegura la búsqueda insensible a mayúsculas/minúsculas
             // y verifica que la cantidad 'disponible' sea mayor que 0
             $productos = Producto::whereRaw('LOWER(nombre) LIKE ?', ['%' . strtolower($query) . '%'])
-                ->where('disponible', '>', 0) // <-- CAMBIO AQUÍ
+                ->where('disponible', 1) // Busca donde disponible sea exactamente 1
                 ->limit(10)
                 ->get();
+
+            $productos->map(function ($producto) {
+                // Asegúrate de que el campo 'imagen_url' en tu BD contenga solo el nombre del archivo (ej. 'burger1.jpg')
+                // asset() genera la URL pública para archivos en public/, y 'storage/' se mapea al enlace simbólico.
+                $producto->imagen_url = asset('storage/img/productos/' . $producto->imagen_url);
+                return $producto;
+            });
         }
 
         // Devolver los productos como JSON

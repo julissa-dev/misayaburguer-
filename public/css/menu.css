@@ -615,8 +615,7 @@ body {
 }
 
 .btn-manage-address,
-.btn-login-to-add-address 
-{
+.btn-login-to-add-address {
     display: block;
     width: 100%;
     padding: 10px;
@@ -693,6 +692,325 @@ hr {
     /* top: 100%; /* Ajustado para que aparezca justo debajo del toggle */
     /* left: 50%; */
     /* transform: translateX(-50%); */ /* Si quieres que esté centrado bajo el enlace */
+}
+
+  /* Categorías */
+
+.categorias-menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    padding: 2rem 1rem;
+    background-color: #ffffff;
+    flex-wrap: wrap; /* Para que en móviles se acomoden bien */
+}
+
+/* Cada ítem */
+.categoria-item {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease; /* Solo la transición de la transformación */
+}
+
+.categoria-item:hover {
+    transform: scale(1.08); /* Se agranda un poco al hacer hover */
+}
+
+/* Imagen o círculo */
+.categoria-item img,
+.categoria-item .circle-texto {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+    text-align: center;
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease; /* Transiciones para el estado activo */
+}
+
+/* El círculo de "Ver todo" */
+.circle-texto {
+    border: 2px solid #c00000;
+    color: #c00000;
+}
+
+/* Texto debajo */
+.categoria-item span {
+    font-weight: bold;
+    color: #2e0c4c;
+    font-size: 0.9rem;
+    text-align: center;
+    transition: color 0.3s ease; /* Transición para el estado activo */
+}
+
+/* Cuando está activo */
+.categoria-item.active .circle-texto {
+    background-color: #c00000; /* Fondo rojo al estar activo */
+    border: 2px solid #c00000;
+    color: white; /* Texto blanco al estar activo */
+}
+
+.categoria-item.active span {
+    color: #c00000;
+    font-weight: 900; /* Texto más fuerte al estar activo */
+}
+
+/* Estilos para el contenedor principal del catálogo */
+.catalogo {
+    display: flex; /* Usamos flex para ordenar los elementos */
+    align-items: flex-start; /* Alinea los elementos al inicio (arriba) */
+    padding: 30px 20px;
+    background-color: #f9f9f9;
+    gap: 40px; /* Espacio entre filtros y productos */
+    flex-direction: row; /* Coloca los elementos en fila (filtro a la izquierda, productos a la derecha) */
+    max-width: 1400px; /* Ancho máximo del catálogo */
+    margin: 0 auto; /* Centra el catálogo en pantallas grandes */
+}
+
+/* Estilos para la barra lateral de filtros */
+.filtros {
+    width: 250px; /* Ancho fijo para la barra de filtros */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    flex-shrink: 0; /* Evita que el filtro se encoja */
+}
+
+.filtros h3 {
+    color: #3d2b64;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.filtros p {
+    color: #2e0c4c;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.filtros label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.filtros input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Estilos para la sección de productos */
+.productos {
+    flex-grow: 1; /* Permite que la sección de productos ocupe el espacio restante */
+    /* text-align: left; */ /* Este estilo ya no es tan relevante aquí, ya que los elementos internos se centrarán */
+}
+
+.productos h2 {
+    color: #2e0c4c;
+    margin-top: 0;
+    margin-bottom: 25px; /* Reducimos un poco el margen inferior */
+    font-size: 1.8rem; /* Reducimos un poco el tamaño del título */
+    text-align: center; /* Centramos el título de "NUESTRA CARTA" */
+}
+
+/* Estilos para la cuadrícula de productos */
+.grid-productos {
+    display: grid;
+    /* Reducimos minmax para hacer las tarjetas un poco más pequeñas y dar espacio a la imagen */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Ajustado de 220px a 200px */
+    gap: 15px; /* Reducimos el espacio entre las tarjetas */
+    margin-bottom: 25px; /* Reducimos un poco el margen inferior */
+}
+
+/* Estilos para cada tarjeta de producto */
+.producto {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    padding: 12px;
+    /* text-align: left; */ /* Se controlará a nivel de elementos internos */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column; /* Asegura que los elementos se apilen verticalmente */
+    /* align-items: center; */ /* Si descomentas esto, TODO el contenido de la tarjeta se centrará (imagen, texto, botón) */
+    /* Si quieres solo el botón centrado y el texto a la izquierda, mantén esto comentado.
+       Si quieres todo centrado, déjalo. Por tu imagen, parece que te convendría tener el texto centrado. */
+}
+
+.producto:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.producto img {
+    max-width: 100%; /* Asegura que la imagen no se desborde */
+    height: auto;    /* Mantiene la proporción */
+    max-height: 120px; /* **¡Ajusta esta altura según veas!** Puedes probar 100px, 150px, etc. */
+    object-fit: contain; /* ¡Muy importante! Escala la imagen para que quepa completamente sin recortar */
+    display: block;  /* Para que `margin: 0 auto` funcione y la imagen se centre */
+    margin: 0 auto 8px auto; /* Centra la imagen y le da un margen inferior */
+    border-radius: 6px;
+}
+
+.producto h4 {
+    color: #3d2b64;
+    margin-top: 0;
+    margin-bottom: 3px; /* Reducimos el margen inferior del título */
+    font-size: 1rem; /* Reducimos el tamaño del título */
+    text-align: center; /* **NUEVO: Centramos el título del producto** */
+}
+
+.producto p {
+    color: #666;
+    margin-bottom: 2px; /* Reducimos el margen inferior del "Al precio de:" */
+    font-size: 0.85rem; /* Reducimos el tamaño del texto */
+    text-align: center; /* **NUEVO: Centramos el texto descriptivo** */
+}
+
+.producto .precio {
+    color: #c52000;
+    font-weight: bold;
+    font-size: 1.1rem; /* Reducimos el tamaño del precio */
+    margin-bottom: 8px; /* Reducimos el margen inferior del precio */
+    text-align: center; /* **NUEVO: Centramos el valor del precio** */
+}
+
+.btn-agregar {
+    background-color: #fff; /* Fondo blanco */
+    color: #ff4c00; /* Texto naranja */
+    border: 2px solid #ff4c00; /* Borde naranja */
+    border-radius: 18px; /* Reducimos un poco el radio del borde del botón */
+    padding: 6px 12px; /* Reducimos el padding del botón */
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8rem; /* Reducimos el tamaño del texto del botón */
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+    
+    /* >>> ESTOS SON LOS CAMBIOS PARA CENTRAR EL BOTÓN <<< */
+    align-self: center; /* Centra el botón horizontalmente dentro de la tarjeta flex */
+    margin-top: auto; /* Empuja el botón hacia la parte inferior si hay espacio variable */
+}
+
+.btn-agregar:hover {
+    background-color: #ff4c00; /* Fondo naranja al pasar el ratón */
+    color: white; /* Texto blanco al pasar el ratón */
+}
+
+.pagination-saya-container {
+    display: flex;
+    flex-direction: column; /* Coloca la lista y el texto de info uno debajo del otro */
+    align-items: center; /* Centra el contenido horizontalmente */
+    margin-top: 40px; /* Espacio superior para separarlo de la cuadrícula de productos */
+    padding-bottom: 30px; /* Espacio inferior si es necesario */
+}
+
+.pagination-saya-list {
+    display: flex;
+    list-style: none; /* Elimina los puntos de la lista */
+    padding: 0;
+    margin: 0;
+    gap: 8px; /* Espacio uniforme entre cada botón de paginación */
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+    justify-content: center;
+}
+
+.pagination-saya-item {
+    /* No hay estilos directos aquí, los aplicamos al enlace/span dentro */
+}
+
+.pagination-saya-link {
+    display: flex; /* Para centrar contenido como texto e íconos */
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px; /* Padding para el tamaño del botón */
+    border-radius: 8px; /* Bordes redondeados consistentes */
+    text-decoration: none;
+    font-weight: 600; /* Seminegrita */
+    font-size: 1rem;
+    transition: all 0.2s ease-in-out; /* Transición suave */
+    cursor: pointer;
+    border: 1px solid #ddd; /* Borde sutil */
+    background-color: #fff;
+    color: #333; /* Texto oscuro */
+    min-width: 40px; /* Para asegurar un ancho mínimo para los números de un dígito */
+    box-sizing: border-box; /* Incluir padding y borde en el ancho/alto */
+}
+
+/* Hover para los números de página interactivos */
+.pagination-saya-link:not(.current-page):not(.disabled):hover {
+    background-color: #FFFAE0; /* Amarillo muy pálido */
+    border-color: #FFC107; /* Borde amarillo del logo */
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra sutil para "levantar" */
+}
+
+/* Estilo para los botones "Anterior" y "Siguiente" */
+.pagination-saya-link.pagination-prev-next {
+    background-color: #FF5722; /* Naranja/rojo de los botones "Agregar" */
+    color: white;
+    border-color: #FF5722;
+    padding: 10px 20px; /* Un poco más anchos */
+}
+
+.pagination-saya-link.pagination-prev-next i {
+    margin: 0 5px; /* Espacio entre ícono y texto */
+    font-size: 0.8em; /* Ícono ligeramente más pequeño */
+}
+
+.pagination-saya-link.pagination-prev-next:hover {
+    background-color: #E64A19; /* Tono más oscuro del naranja/rojo al pasar el ratón */
+    border-color: #E64A19;
+}
+
+/* Estilo para la página actual (activa) */
+.pagination-saya-item.active .pagination-saya-link.current-page {
+    background-color: #FFC107; /* Amarillo brillante del logo */
+    color: #333; /* O un negro puro para máximo contraste */
+    border-color: #FFC107;
+    cursor: default; /* No cliqueable */
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* Sombra más pronunciada */
+}
+
+/* Estilo para elementos deshabilitados (Anterior/Siguiente cuando no aplican, o ...) */
+.pagination-saya-item.disabled .pagination-saya-link {
+    background-color: #f0f0f0; /* Gris claro */
+    color: #aaa; /* Texto gris más claro */
+    border-color: #eee;
+    cursor: not-allowed;
+    opacity: 0.7; /* Ligeramente transparente */
+}
+
+/* Estilo específico para elipsis (los "...") */
+.pagination-saya-item.disabled .pagination-saya-link.ellipsis {
+    background: none; /* Sin fondo */
+    border: none; /* Sin borde */
+    color: #666; /* Gris más oscuro para legibilidad */
+    cursor: default;
+    opacity: 1; /* Completamente visible */
+    padding: 10px 5px; /* Padding más compacto */
+}
+
+.pagination-saya-info {
+    font-size: 0.9em; /* Texto un poco más pequeño */
+    color: #666; /* Gris sutil */
+    margin-top: 15px; /* Espacio entre la paginación y el texto */
+    text-align: center;
 }
 
 /* Media Queries para Responsividad */
