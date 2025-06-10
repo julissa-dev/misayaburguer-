@@ -31,20 +31,19 @@
 
         {{-- Iterar por las categorías --}}
         @foreach ($categorias as $categoria)
-            @php
-                $imagenes = [
-                    'hamburguesa' => 'hamburguesa.png',
-                    'bebida' => 'bebida.jpg',
-                    
-                ];
-                $imagenUrl = $imagenes[$categoria] ?? 'default.jpg';
-            @endphp
-
-            <button class="categoria-item">
-                <img src="{{ asset('img/categoria/' . $imagenUrl) }}" alt="{{ $categoria }}">
-                <span>{{ $categoria }}</span>
-            </button>
-        @endforeach
+        <button class="categoria-item" data-categoria-id="{{ $categoria->id }}">
+            {{-- Verifica si la categoría tiene una imagen de icono definida --}}
+            @if ($categoria->imagen_icono)
+                {{-- Construye la URL de la imagen usando el path almacenado en la DB --}}
+                <img src="{{ asset('storage/img/categorias/' . $categoria->imagen_icono) }}" alt="Icono de {{ $categoria->nombre }}">
+            @else
+                {{-- Muestra una imagen por defecto si no hay imagen de icono --}}
+                <img src="{{ asset('img/categoria/default.png') }}" alt="Icono por defecto de {{ $categoria->nombre }}">
+            @endif
+            {{-- Muestra el nombre de la categoría --}}
+            <span>{{ $categoria->nombre }}</span>
+        </button>
+    @endforeach
     </section>
 
     <main class="catalogo">

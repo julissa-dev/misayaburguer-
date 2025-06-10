@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Carrito;
 use App\Models\CarritoItem;
+use App\Models\Categoria;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -84,11 +85,14 @@ class HomeController extends Controller
             }
         }
 
-        $categorias = Producto::select('categoria')->distinct()->get()->pluck('categoria');
+        $categorias = Categoria::select('id', 'nombre', 'imagen_icono')->get();
 
-        // 4. Obtén todos los productos paginados y que estén disponibles.
-        $productos = Producto::where('disponible', 1) // O puedes usar ->where('disponible', '>', 0)
+        // 4. Obtén todos los productos paginados y que estén disponibles, y carga la relación 'categoria'.
+        $productos = Producto::with('categoria') // Carga la relación 'categoria' en los productos
+            ->where('disponible', 1)
             ->paginate(10);
+
+        
         return view('menu', compact('contador', 'productos', 'carritoItems', 'carrito', 'totalPrice', 'categorias'));
     }
 
