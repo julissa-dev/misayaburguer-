@@ -52,7 +52,7 @@ class HomeController extends Controller
         return view('home', compact('contador', 'productos', 'carritoItems', 'carrito', 'totalPrice'));
     }
 
-    public function menu()
+    public function menu(Request $request)
     {
         $carrito = null; // Inicializa el carrito a null por si no hay un usuario autenticado o un carrito existente
         $carritoItems = collect(); // Inicializa carritoItems como una colección vacía de Laravel
@@ -86,6 +86,10 @@ class HomeController extends Controller
         }
 
         $categorias = Categoria::select('id', 'nombre', 'imagen_icono')->get();
+
+        if ($request->ajax()) {
+            return $this->getFilteredProducts($request);
+        }
 
         // 4. Obtén todos los productos paginados y que estén disponibles, y carga la relación 'categoria'.
         $productos = Producto::with('categoria') // Carga la relación 'categoria' en los productos
@@ -156,5 +160,54 @@ class HomeController extends Controller
 
         // Devolver los productos como JSON
         return response()->json($productos);
+    }
+
+     // Método para filtrar productos (será llamado por AJAX)
+    public function getFilteredProducts(Request $request)
+    {
+        $query = Producto::with('categoria')->where('disponible', 1);
+
+        // Filtrar por categoría
+        // Verifica si 'categoria_id' está presente y no es 'all'
+        if ($request->has('categoria_id') && $request->input('categoria_id') !== 'all') {
+            $query->where('categoria_id', $request->input('categoria_id'));
+        }
+
+        // Filtrar por rangos de precio
+        if ($request->has('min_price') && $request->has('max_price')) {
+            $minPrices = $request->input('min_price');
+            $maxPrices = $request->input('max_price');
+
+            // Asegurarse de que al menos un rango de precio esté seleccionado
+            if (is_array($minPrices) && count($minPrices) > 0) {
+                $query->where(function ($q) use ($minPrices, $maxPrices) {
+                    foreach ($minPrices as $key => $min) {
+                        $max = $maxPrices[$key];
+                        $q->orWhereBetween('precio', [(float)$min, (float)$max]);
+                    }
+                });
+            }
+        }
+
+        // Búsqueda por query (si la tienes implementada y quieres combinarla)
+        if ($request->has('query')) {
+            $searchQuery = $request->input('query');
+            $query->whereRaw('LOWER(nombre) LIKE ?', ['%' . strtolower($searchQuery) . '%']);
+        }
+
+        // Paginación
+        $productos = $query->paginate(10); // Puedes ajustar el número de ítems por página
+
+        // Modificar la imagen_url para que sea una URL completa para el frontend
+        $productos->getCollection()->transform(function ($producto) {
+            $producto->imagen_url = asset('storage/img/productos/' . $producto->imagen_url);
+            return $producto;
+        });
+
+        
+        
+
+        // Devolver los datos de productos paginados como JSON
+        return response()->json(['productos' => $productos]);
     }
 }

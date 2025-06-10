@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/menu', [HomeController::class, 'menu'])->name('menu');
+Route::get('/productos/filtrar', [HomeController::class, 'getFilteredProducts'])->name('productos.filtrar');
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 
