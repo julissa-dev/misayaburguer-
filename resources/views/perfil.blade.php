@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Saya Burguer</title>
-    <link rel="stylesheet" href="css/menu.css" />
+    <link rel="stylesheet" href="{{ asset('css/header.css') }}" />
     <script src="https://kit.fontawesome.com/a2d4f54cbc.js" crossorigin="anonymous"></script>
     {{-- Agrega SweetAlert2 para mensajes --}}
     

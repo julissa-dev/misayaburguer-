@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Carrito;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
@@ -33,16 +35,17 @@ class RegisterController extends Controller
         $usuario->nombre = $request->input('nombre');
         $usuario->apellido = $request->input('apellido');
         $usuario->email = $request->input('email');
-        $usuario->password = bcrypt($request->input('password'));
+        $usuario->password = Hash::make($request->input('password')); // Usa Hash::make para encriptar la contraseña
         $usuario->telefono = $request->input('telefono');
         $usuario->save();
 
+        // 3. Creación del carrito asociado al nuevo usuario
         $carrito = new Carrito();
         $carrito->usuario_id = $usuario->id;
-        // $carrito->creado_en = now(); // ¡ELIMINA ESTA LÍNEA!
         $carrito->save();
 
 
+        Auth::login($usuario);
 
         return redirect()->route('home');
     }

@@ -1,7 +1,7 @@
 // products.js
 
 document.addEventListener("DOMContentLoaded", () => {
-    let selectedCategory = "all";
+    let selectedCategory = "all"; // Inicialmente "all"
     let selectedPriceRanges = [];
 
     const categoriaButtons = document.querySelectorAll(".categoria-item");
@@ -9,9 +9,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const gridProductos = document.querySelector(".grid-productos");
     const paginacionDiv = document.querySelector(".paginacion");
 
+    // Función para obtener parámetros de la URL
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        const regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+        const results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    // Al cargar la página, comprueba si hay un ID de categoría en la URL
+    const initialCategoryId = getUrlParameter("categoria_id");
+    if (initialCategoryId) {
+        selectedCategory = initialCategoryId; // Establece la categoría inicial desde la URL
+    }
+
     async function fetchFilteredProducts(page = 1) {
-        // Usa la variable global
-        const url = new URL(window.routes.productosFiltrar); // ¡Aquí está el cambio!
+        const url = new URL(window.routes.productosFiltrar);
         url.searchParams.append("page", page);
 
         if (selectedCategory && selectedCategory !== "all") {
@@ -46,17 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateProductsUI(paginatedProducts) {
-        if (!gridProductos || !paginacionDiv) return; // Ensure elements exist
+        if (!gridProductos || !paginacionDiv) return;
 
         let productsHtml = "";
         if (paginatedProducts.data.length === 0) {
             productsHtml =
                 '<p class="no-results">No se encontraron productos con estos filtros.</p>';
         } else {
+            // Asegúrate de que tu modelo Producto tenga un atributo 'slug' para usarlo aquí
+            // Si tu base de datos no tiene 'slug', usa 'id' y ajusta la ruta en Laravel si es necesario.
             productsHtml = paginatedProducts.data
                 .map(
                     (producto) => `
-            <div class="producto">
+            <div class="producto" data-producto-slug="${producto.slug}" data-producto-id="${producto.id}">
                 <img src="${producto.imagen_url}" alt="${producto.nombre}" />
                 <h4>${producto.nombre}</h4>
                 <p>Al precio de:</p>
@@ -157,13 +172,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     categoriaButtons.forEach((button) => {
         button.addEventListener("click", function () {
+            // Eliminar la clase 'active' de todos los botones de categoría
             categoriaButtons.forEach((btn) => btn.classList.remove("active"));
+            // Añadir la clase 'active' al botón clicado
             this.classList.add("active");
+            // Actualizar la categoría seleccionada
             selectedCategory = this.dataset.categoriaId || "all";
 
+            // Limpiar filtros de precio al cambiar de categoría
             priceCheckboxes.forEach((checkbox) => (checkbox.checked = false));
             selectedPriceRanges = [];
 
+            // Disparar la carga de productos con la nueva categoría
             fetchFilteredProducts();
         });
     });
@@ -203,11 +223,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Event listener for adding products to cart from the main product grid
     if (gridProductos) {
         gridProductos.addEventListener("click", async function (event) {
             const target = event.target;
 
+            // Lógica para el botón "Agregar" (existente)
             if (target.classList.contains("btn-agregar")) {
                 const productId = target.dataset.productoId;
                 if (!productId) return;
@@ -238,7 +258,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     const data = await response.json();
                     if (data.success) {
-                        // Assuming window.updateCartUI is available globally from header.js
                         if (typeof window.updateCartUI === "function") {
                             window.updateCartUI(data);
                         }
@@ -264,10 +283,41 @@ document.addEventListener("DOMContentLoaded", () => {
                         "error"
                     );
                 }
+            } else {
+                // *** NUEVA LÓGICA: Redirigir al detalle del producto si no se hizo clic en el botón "Agregar" ***
+                const productoCard = target.closest(".producto"); // Encuentra el ancestro más cercano con la clase 'producto'
+
+                if (productoCard) {
+                    const productoSlug = productoCard.dataset.productoSlug; // Asegúrate de que el slug esté en el dataset
+                    // O si usas ID para la ruta: const productoId = productoCard.dataset.productoId;
+
+                    if (productoSlug) {
+                        // Construye la URL usando la ruta definida en Laravel
+                        window.location.href = `/productos/${productoSlug}`;
+                        // Si usas ID: window.location.href = `/productos/${productoId}`;
+                    }
+                }
             }
         });
     }
 
-    // Initial load of products (simulating a click on "Ver todo")
-    document.querySelector('.categoria-item[data-categoria-id="all"]')?.click();
+    // *** MODIFICACIÓN CLAVE PARA LA INICIALIZACIÓN ***
+
+    // Si se cargó una categoría desde la URL, simula un clic en el botón correspondiente.
+    if (initialCategoryId) {
+        const categoryButtonToSelect = document.querySelector(
+            `.categoria-item[data-categoria-id="${initialCategoryId}"]`
+        );
+        if (categoryButtonToSelect) {
+            categoryButtonToSelect.click(); // Simula el clic para aplicar el filtro y activar el botón
+        } else {
+            // Si la categoría de la URL no existe o no tiene un botón,
+            // carga los productos por defecto (todos)
+            fetchFilteredProducts();
+        }
+    } else {
+        // Si no hay categoría en la URL, carga los productos por defecto (todos)
+        // Esto reemplaza tu línea original: document.querySelector('.categoria-item[data-categoria-id="all"]')?.click();
+        fetchFilteredProducts();
+    }
 });

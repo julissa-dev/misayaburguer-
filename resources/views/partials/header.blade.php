@@ -1,7 +1,7 @@
 <header class="navbar">
     <div class="logo">
         <a href="{{ route('home') }}">
-            <img src="img/front/log.png" alt="Logo del sitio" />
+            <img src="{{ asset('img/front/log.png') }}" alt="Logo del sitio" />
         </a>
     </div>
 
