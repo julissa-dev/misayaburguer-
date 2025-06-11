@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('promocion_id')->constrained('promociones')->onDelete('cascade'); // promo_id: int(11)
             $table->foreignId('producto_id')->constrained('productos'); // producto_id: int(11)
             $table->integer('cantidad'); // cantidad: int(11)
+            $table->timestamps();
             // No se especifican timestamps en el diagrama.
         });
     }

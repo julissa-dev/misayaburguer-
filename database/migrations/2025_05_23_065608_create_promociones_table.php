@@ -18,6 +18,7 @@ return new class extends Migration
             $table->decimal('precio_promocional', 10, 2); // precio_promocional: decimal(10,2)
             $table->string('imagen_url', 255)->nullable(); // imagen_url: varchar(255)
             $table->boolean('activa')->default(true); // activa: tinyint(1)
+            $table->timestamps();
             // No se especifica created_at/updated_at en el diagrama.
             // $table->timestamps();
         });

@@ -111,7 +111,7 @@
                 </div>
                 <div class="cart-dropdown-items" id="cartDropdownItems">
                     {{-- Aquí se incluirá el contenido de los ítems del carrito. --}}
-                    @include('partials.cart_items', ['carritoItems' => $carritoItems])
+                    @include('partials.cart_items', ['carritoItems' => $carritoItems, 'promocionItems' => $promocionItems])
                 </div>
                 <div class="cart-dropdown-footer">
                     <span class="total-label">Total:</span>

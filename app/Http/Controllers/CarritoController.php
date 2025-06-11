@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Carrito;
 use App\Models\CarritoItem;
+use App\Models\CarritoPromocion;
 use App\Models\Producto; // Asegúrate de importar el modelo Producto
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Promocion;
 
 class CarritoController extends Controller
 {
@@ -48,8 +50,8 @@ class CarritoController extends Controller
 
             // 4. Buscar el ítem del producto en el carrito del usuario
             $carritoItem = CarritoItem::where('carrito_id', $carrito->id)
-                                        ->where('producto_id', $productoId)
-                                        ->first();
+                ->where('producto_id', $productoId)
+                ->first();
 
             // 5. Si el ítem ya existe, actualizar la cantidad; de lo contrario, crearlo
             if ($carritoItem) {
@@ -93,12 +95,13 @@ class CarritoController extends Controller
                 'totalPrice' => $newTotalPrice,
                 'totalQuantity' => $newTotalQuantity
             ]);
-
         } catch (\Exception $e) {
             // Capturar cualquier excepción inesperada
             return response()->json(['success' => false, 'message' => 'Error al procesar la solicitud: ' . $e->getMessage()], 500);
         }
     }
+
+    
 
     public function removeItem(CarritoItem $carritoItem)
     {
@@ -128,7 +131,6 @@ class CarritoController extends Controller
                 'totalPrice' => $newTotalPrice,
                 'totalQuantity' => $newTotalQuantity
             ]);
-
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error al eliminar el producto: ' . $e->getMessage()], 500);
         }
@@ -179,7 +181,6 @@ class CarritoController extends Controller
                 'totalPrice' => $newTotalPrice,
                 'totalQuantity' => $newTotalQuantity
             ]);
-
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error al actualizar la cantidad: ' . $e->getMessage()], 500);
         }
@@ -197,8 +198,8 @@ class CarritoController extends Controller
         $carrito = Carrito::where('usuario_id', $userId)->first();
         if ($carrito) {
             return CarritoItem::with('producto')
-                            ->where('carrito_id', $carrito->id)
-                            ->get();
+                ->where('carrito_id', $carrito->id)
+                ->get();
         }
         return collect(); // Devuelve una colección vacía si no hay carrito
     }
@@ -218,4 +219,5 @@ class CarritoController extends Controller
         }
         return $total;
     }
+
 }

@@ -1,0 +1,50 @@
+.promo-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.promo-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 1rem;
+    width: 300px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.promo-card img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.promo-precio {
+    color: #e63946;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.productos-incluidos {
+    text-align: left;
+    margin: 1rem 0;
+    padding-left: 1rem;
+}
+
+.btn-add-to-cart-promo {
+    background-color: #ff5722;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.btn-add-to-cart-promo:hover {
+    background-color: #e64a19;
+}
+

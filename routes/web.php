@@ -40,6 +40,9 @@ Route::get('/productos/{producto:slug}', [ProductoController::class, 'show'])->n
 
 Route::get('/promociones', [PromocionController::class, 'index'])->name('promocion');
 
+Route::post('/carrito/promocion/añadir', [CarritoController::class, 'añadirPromocion'])->name('carrito.promocion.añadir');
+
+
 
 
 Route::get('prueba', function () {

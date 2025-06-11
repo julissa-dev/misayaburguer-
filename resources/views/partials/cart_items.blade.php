@@ -4,13 +4,16 @@
     @foreach ($carritoItems as $item)
         @if ($item->producto)
             <div class="cart-item" data-item-id="{{ $item->id }}">
-                <img src="{{ asset('storage/img/productos/' .$item->producto->imagen_url) }}" alt="{{ $item->producto->nombre }}">
+                <img src="{{ asset('storage/img/productos/' . $item->producto->imagen_url) }}"
+                    alt="{{ $item->producto->nombre }}">
                 <div class="item-details">
                     <span class="item-name">{{ $item->producto->nombre }}</span>
                     <div class="item-quantity-controls">
-                        <button class="quantity-btn decrease-quantity" data-item-id="{{ $item->id }}" data-action="decrease">-</button>
+                        <button class="quantity-btn decrease-quantity" data-item-id="{{ $item->id }}"
+                            data-action="decrease">-</button>
                         <span class="item-quantity">{{ $item->cantidad }}</span>
-                        <button class="quantity-btn increase-quantity" data-item-id="{{ $item->id }}" data-action="increase">+</button>
+                        <button class="quantity-btn increase-quantity" data-item-id="{{ $item->id }}"
+                            data-action="increase">+</button>
                     </div>
                     <span class="item-price">${{ number_format($item->producto->precio * $item->cantidad, 2) }}</span>
                 </div>
@@ -27,4 +30,8 @@
             </div>
         @endif
     @endforeach
+
+    
+
+
 @endif

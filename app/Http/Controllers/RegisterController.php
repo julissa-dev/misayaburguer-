@@ -39,10 +39,10 @@ class RegisterController extends Controller
         $usuario->telefono = $request->input('telefono');
         $usuario->save();
 
-        // 3. Creación del carrito asociado al nuevo usuario
-        $carrito = new Carrito();
-        $carrito->usuario_id = $usuario->id;
-        $carrito->save();
+        // // 3. Creación del carrito asociado al nuevo usuario
+        // $carrito = new Carrito();
+        // $carrito->usuario_id = $usuario->id;
+        // $carrito->save();
 
 
         Auth::login($usuario);
