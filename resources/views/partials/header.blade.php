@@ -21,7 +21,7 @@
         <a href="{{ route('menu') }}" class="{{ Request::routeIs('menu') ? 'active-link' : '' }}">
             <i class="fa-solid fa-burger"></i> MENU
         </a>
-        <a href="#"><i class="fa-solid fa-percent"></i> PROMOCIONES</a>
+        <a href="{{ route('promocion') }}" class="{{ Request::routeIs('promocion') ? 'active-link' : '' }}"><i class="fa-solid fa-percent"></i> PROMOCIONES</a>
         {{-- INICIO: Dropdown de Delivery a Domicilio --}}
         <div class="dropdown"> {{-- Reutilizamos la clase 'dropdown' que ya tienes --}}
             <a href="#" id="deliveryToggle" class="dropdown-toggle"> {{-- Usamos dropdown-toggle --}}

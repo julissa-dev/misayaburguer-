@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Saya Burguer</title>
-    <link rel="stylesheet" href="{{ asset('css/usuario/perfil.css') }}" />
     <link rel="stylesheet" href="{{ asset('css/header.css') }}" />
     <script src="https://kit.fontawesome.com/a2d4f54cbc.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

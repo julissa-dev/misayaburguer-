@@ -452,13 +452,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (manageAddressBtn) {
         manageAddressBtn.addEventListener("click", function (event) {
             event.preventDefault();
-            window.location.href = "{{ route('perfil') }}";
+            window.location.href = window.routes.perfil;
         });
     }
     if (btnLoginBtn) {
         btnLoginBtn.addEventListener("click", function (event) {
             event.preventDefault();
-            window.location.href = "{{ route('login') }}";
+            window.location.href = window.routes.login;
         });
     }
 
