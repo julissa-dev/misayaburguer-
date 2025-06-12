@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Carrito;
 use App\Models\CarritoItem;
+use App\Models\CarritoPromocion;
 use App\Models\Categoria;
 use App\Models\Producto;
+use App\Models\Promocion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,73 +15,95 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $carrito = null; // Inicializa el carrito a null por si no hay un usuario autenticado o un carrito existente
-        $carritoItems = collect(); // Inicializa carritoItems como una colección vacía de Laravel
-        $contador = 0; // Inicializa el contador de ítems
+        $carrito = null;
+        $carritoItems = collect();
+        $promocionItems = collect();
+        $contador = 0;
         $totalPrice = 0;
 
-        // 1. Verificar si el usuario está autenticado y, si lo está, intentar encontrar su carrito
         if (Auth::check()) {
-            // Busca el carrito asociado al ID del usuario autenticado
-            $carrito = Carrito::where('usuario_id', Auth::id())->first();
+            $carrito = Carrito::where('usuario_id', Auth::id())->first(); // 
 
-            // 2. Si se encuentra un carrito, carga sus ítems.
-            // Es crucial usar 'with('producto')' para cargar los detalles del producto
-            // junto con cada CarritoItem. Esto evita el problema de "N+1 queries",
-            // donde Laravel haría una consulta a la base de datos por cada producto en el carrito.
             if ($carrito) {
-                $carritoItems = CarritoItem::with('producto') // Carga la relación 'producto'
-                    ->where('carrito_id', $carrito->id)
+                // Cargar productos en el carrito
+                $carritoItems = CarritoItem::with('producto')
+                    ->where('carrito_id', $carrito->id) // 
                     ->get();
 
-                // 3. Calcula el contador sumando las cantidades de los ítems del carrito.
-                // El método 'sum()' de las colecciones de Laravel es muy útil para esto.
-                $contador = $carritoItems->sum('cantidad');
+                $contador += $carritoItems->sum('cantidad'); // 
 
                 foreach ($carritoItems as $item) {
                     if ($item->producto) {
-                        $totalPrice += $item->producto->precio * $item->cantidad;
+                        $totalPrice += $item->producto->precio * $item->cantidad; // 
+                    }
+                }
+
+                // Cargar promociones en el carrito, incluyendo los detalles de la promoción
+                // y los productos dentro de esos detalles.
+                $promocionItems = CarritoPromocion::with(['promocion.detalles.producto']) // Carga anidada para optimizar 
+                    ->where('carrito_id', $carrito->id) // 
+                    ->get();
+
+                $contador += $promocionItems->sum('cantidad'); // 
+
+                foreach ($promocionItems as $promo) {
+                    if ($promo->promocion) {
+                        $totalPrice += $promo->promocion->precio_promocional * $promo->cantidad; // 
                     }
                 }
             }
         }
 
-        // 4. Obtén todos los productos. Si tu vista los necesita para mostrar un catálogo, por ejemplo.
+        // Promociones activas para mostrar al usuario, cargando sus detalles y los productos asociados
+        $promociones = Promocion::where('activa', 1) // 
+            ->with('detalles.producto') // Carga anidada: detalles y sus productos
+            ->get();
+
+        // Productos opcionales, por si se usan en la vista
         $productos = Producto::all();
 
         // 5. Retorna la vista 'home' pasando todas las variables necesarias.
         // La función 'compact()' es una forma concisa de pasar variables a la vista.
-        return view('home', compact('contador', 'productos', 'carritoItems', 'carrito', 'totalPrice'));
+        return view('home', compact('contador', 'productos', 'carritoItems', 'carrito', 'totalPrice','promociones',
+            'promocionItems'));
     }
 
     public function menu(Request $request)
     {
-        $carrito = null; // Inicializa el carrito a null por si no hay un usuario autenticado o un carrito existente
-        $carritoItems = collect(); // Inicializa carritoItems como una colección vacía de Laravel
-        $contador = 0; // Inicializa el contador de ítems
+        $carrito = null;
+        $carritoItems = collect();
+        $promocionItems = collect();
+        $contador = 0;
         $totalPrice = 0;
 
-        // 1. Verificar si el usuario está autenticado y, si lo está, intentar encontrar su carrito
         if (Auth::check()) {
-            // Busca el carrito asociado al ID del usuario autenticado
-            $carrito = Carrito::where('usuario_id', Auth::id())->first();
+            $carrito = Carrito::where('usuario_id', Auth::id())->first(); // 
 
-            // 2. Si se encuentra un carrito, carga sus ítems.
-            // Es crucial usar 'with('producto')' para cargar los detalles del producto
-            // junto con cada CarritoItem. Esto evita el problema de "N+1 queries",
-            // donde Laravel haría una consulta a la base de datos por cada producto en el carrito.
             if ($carrito) {
-                $carritoItems = CarritoItem::with('producto') // Carga la relación 'producto'
-                    ->where('carrito_id', $carrito->id)
+                // Cargar productos en el carrito
+                $carritoItems = CarritoItem::with('producto')
+                    ->where('carrito_id', $carrito->id) // 
                     ->get();
 
-                // 3. Calcula el contador sumando las cantidades de los ítems del carrito.
-                // El método 'sum()' de las colecciones de Laravel es muy útil para esto.
-                $contador = $carritoItems->sum('cantidad');
+                $contador += $carritoItems->sum('cantidad'); // 
 
                 foreach ($carritoItems as $item) {
                     if ($item->producto) {
-                        $totalPrice += $item->producto->precio * $item->cantidad;
+                        $totalPrice += $item->producto->precio * $item->cantidad; // 
+                    }
+                }
+
+                // Cargar promociones en el carrito, incluyendo los detalles de la promoción
+                // y los productos dentro de esos detalles.
+                $promocionItems = CarritoPromocion::with(['promocion.detalles.producto']) // Carga anidada para optimizar 
+                    ->where('carrito_id', $carrito->id) // 
+                    ->get();
+
+                $contador += $promocionItems->sum('cantidad'); // 
+
+                foreach ($promocionItems as $promo) {
+                    if ($promo->promocion) {
+                        $totalPrice += $promo->promocion->precio_promocional * $promo->cantidad; // 
                     }
                 }
             }
@@ -96,8 +120,14 @@ class HomeController extends Controller
             ->where('disponible', 1)
             ->paginate(10);
 
-        
-        return view('menu', compact('contador', 'productos', 'carritoItems', 'carrito', 'totalPrice', 'categorias'));
+        // Promociones activas para mostrar al usuario, cargando sus detalles y los productos asociados
+        $promociones = Promocion::where('activa', 1) // 
+            ->with('detalles.producto') // Carga anidada: detalles y sus productos
+            ->get();
+
+
+        return view('menu', compact('contador', 'productos', 'carritoItems', 'carrito', 'totalPrice', 'categorias','promociones',
+            'promocionItems'));
     }
 
     public function perfil()
@@ -162,7 +192,7 @@ class HomeController extends Controller
         return response()->json($productos);
     }
 
-     // Método para filtrar productos (será llamado por AJAX)
+    // Método para filtrar productos (será llamado por AJAX)
     public function getFilteredProducts(Request $request)
     {
         $query = Producto::with('categoria')->where('disponible', 1);
@@ -204,8 +234,8 @@ class HomeController extends Controller
             return $producto;
         });
 
-        
-        
+
+
 
         // Devolver los datos de productos paginados como JSON
         return response()->json(['productos' => $productos]);

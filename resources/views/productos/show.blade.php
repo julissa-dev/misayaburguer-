@@ -20,6 +20,7 @@
     @include('partials.header', [
         'contador' => $contador ?? 0,
         'carritoItems' => $carritoItems ?? collect(),
+        'promocionItems' => $promocionItems ?? collect(),
         'totalPrice' => $totalPrice ?? 0,
     ])
 

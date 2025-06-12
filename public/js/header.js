@@ -259,6 +259,143 @@ document.addEventListener("DOMContentLoaded", () => {
                         );
                     }
                 }
+
+                // **NUEVA FUNCIONALIDAD PARA PROMOCIONES**
+
+                // Handle promotion item removal
+                if (target.classList.contains("remove-promo-btn")) {
+                    const promoId = target.dataset.promoId; // Use data-promo-id
+                    if (!promoId) return;
+
+                    Swal.fire({
+                        title: "¿Eliminar promoción?",
+                        text: "¿Estás seguro de que quieres quitar esta promoción del carrito?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Sí, eliminar",
+                        cancelButtonText: "Cancelar",
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const response = await fetch(
+                                    `/carrito/remover-promocion/${promoId}`, // New route for promotions
+                                    {
+                                        method: "DELETE",
+                                        headers: {
+                                            "X-CSRF-TOKEN": document
+                                                .querySelector(
+                                                    'meta[name="csrf-token"]'
+                                                )
+                                                .getAttribute("content"),
+                                            "Content-Type": "application/json",
+                                            Accept: "application/json",
+                                        },
+                                    }
+                                );
+
+                                if (!response.ok) {
+                                    const errorData = await response.json();
+                                    throw new Error(
+                                        errorData.message ||
+                                            "Error al eliminar la promoción"
+                                    );
+                                }
+
+                                const data = await response.json();
+                                if (data.success) {
+                                    window.updateCartUI(data);
+                                    Swal.fire(
+                                        "Eliminado!",
+                                        "La promoción ha sido eliminada del carrito.",
+                                        "success"
+                                    );
+                                } else {
+                                    Swal.fire(
+                                        "Error",
+                                        data.message ||
+                                            "No se pudo eliminar la promoción.",
+                                        "error"
+                                    );
+                                }
+                            } catch (error) {
+                                console.error(
+                                    "Error al eliminar promoción del carrito:",
+                                    error
+                                );
+                                Swal.fire(
+                                    "Error",
+                                    "Hubo un problema al eliminar la promoción: " +
+                                        error.message,
+                                    "error"
+                                );
+                            }
+                        }
+                    });
+                }
+
+                // Handle promotion quantity update
+                if (
+                    target.classList.contains("increase-quantity-promo") ||
+                    target.classList.contains("decrease-quantity-promo")
+                ) {
+                    const promoId = target.dataset.promoId;
+                    const action = target.dataset.action;
+                    if (!promoId || !action) return;
+
+                    try {
+                        const response = await fetch(
+                            `/carrito/actualizar-promocion/${promoId}`,
+                            {
+                                method: "PUT",
+                                headers: {
+                                    "X-CSRF-TOKEN": document
+                                        .querySelector(
+                                            'meta[name="csrf-token"]'
+                                        )
+                                        .getAttribute("content"),
+                                    "Content-Type": "application/json",
+                                    Accept: "application/json",
+                                },
+                                body: JSON.stringify({
+                                    action: action,
+                                }),
+                            }
+                        );
+
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(
+                                errorData.message ||
+                                    "Error al actualizar la cantidad de la promoción"
+                            );
+                        }
+
+                        const data = await response.json();
+                        if (data.success) {
+                            window.updateCartUI(data);
+                        } else {
+                            Swal.fire(
+                                "Error",
+                                data.message ||
+                                    "No se pudo actualizar la cantidad de la promoción.",
+                                "error"
+                            );
+                        }
+                    } catch (error) {
+                        console.error(
+                            "Error al actualizar cantidad de promoción:",
+                            error
+                        );
+                        Swal.fire(
+                            "Error",
+                            "Hubo un problema al actualizar la cantidad de la promoción: " +
+                                error.message,
+                            "error"
+                        );
+                    }
+                }
             });
         }
     }

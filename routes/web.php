@@ -40,26 +40,16 @@ Route::get('/productos/{producto:slug}', [ProductoController::class, 'show'])->n
 
 Route::get('/promociones', [PromocionController::class, 'index'])->name('promocion');
 
-Route::post('/carrito/promocion/añadir', [CarritoController::class, 'añadirPromocion'])->name('carrito.promocion.añadir');
+Route::post('/carrito/añadir-promocion', [CarritoController::class, 'añadirPromocion'])->name('carrito.addPromo');
+
+Route::delete('/carrito/remover-promocion/{carritoPromocion}', [CarritoController::class, 'removerPromocion'])->name('carrito.removePromo');
+
+Route::put('/carrito/actualizar-promocion/{carritoPromocion}', [CarritoController::class, 'actualizarPromocion'])->name('carrito.updatePromo');
 
 
 
 
-Route::get('prueba', function () {
-    
-    // $usuario = new Usuario();
-    // $usuario->nombre = 'CRISTHIAN GIOVANY SILVA RAMIREZ';
-    // $usuario->email = 'cristhian.silva@gmail.com';
-    // $usuario->password = '123456';
 
-    // $usuario->save();
-
-    $usuario = Usuario::find(2);
-
-
-    return $usuario;
-
-})->name('prueba');
 
 
 

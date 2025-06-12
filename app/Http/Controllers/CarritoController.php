@@ -9,6 +9,7 @@ use App\Models\Producto; // Asegúrate de importar el modelo Producto
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Promocion;
+use Illuminate\Support\Facades\Log;
 
 class CarritoController extends Controller
 {
@@ -80,12 +81,19 @@ class CarritoController extends Controller
             // 6. Recargar los ítems del carrito y calcular el nuevo total/cantidad para la UI
             // Reutilizamos tus métodos de ayuda existentes
             $updatedCarritoItems = $this->getCartItemsForUser($userId);
+            $updatedPromocionItems = $this->getCartPromocionesForUser($userId); 
+            
             $newTotalPrice = $this->calculateCartTotal($updatedCarritoItems);
-            $newTotalQuantity = $updatedCarritoItems->sum('cantidad'); // Suma de la columna 'cantidad' de todos los items
+            $newTotalQuantity = $updatedCarritoItems->sum('cantidad') + $updatedPromocionItems->sum('cantidad'); // Suma de la columna 'cantidad' de todos los items
 
             // 7. Renderizar los ítems del carrito como HTML para enviar al frontend
             // Asumo que tienes una vista parcial en 'resources/views/partials/cart_items.blade.php'
-            $itemsHtml = view('partials.cart_items', ['carritoItems' => $updatedCarritoItems])->render();
+            $updatedPromocionItems = $this->getCartPromocionesForUser($userId); // o Auth::id()
+
+            $itemsHtml = view('partials.cart_items', [
+                'carritoItems' => $updatedCarritoItems,
+                'promocionItems' => $updatedPromocionItems
+            ])->render();
 
             // 8. Devolver la respuesta JSON
             return response()->json([
@@ -101,28 +109,31 @@ class CarritoController extends Controller
         }
     }
 
-    
+
 
     public function removeItem(CarritoItem $carritoItem)
     {
-
         $carritoItem->load('carrito');
-        // Asegúrate de que el CarritoItem pertenezca al usuario autenticado para seguridad
+
         if (Auth::id() != $carritoItem->carrito->usuario_id) {
             return response()->json(['success' => false, 'message' => 'Acceso no autorizado.'], 403);
         }
 
         try {
-            $carritoItem->delete(); // Elimina el ítem del carrito
+            $carritoItem->delete();
 
-            // Después de eliminar, recarga el carrito para obtener los nuevos datos
-            $updatedCarritoItems = $this->getCartItemsForUser(Auth::id());
-            $newTotalPrice = $this->calculateCartTotal($updatedCarritoItems);
-            $newTotalQuantity = $updatedCarritoItems->sum('cantidad');
+            $userId = Auth::id();
 
-            // Renderiza los ítems del carrito de nuevo (o pasa los datos para que JS los renderice)
-            // Una forma común es pasar el HTML ya renderizado desde el servidor
-            $itemsHtml = view('partials.cart_items', ['carritoItems' => $updatedCarritoItems])->render();
+            $updatedCarritoItems = $this->getCartItemsForUser($userId);
+            $updatedPromocionItems = $this->getCartPromocionesForUser($userId);
+
+            $newTotalPrice = $this->calculateCartTotal($updatedCarritoItems) + $this->calculatePromocionesTotal($updatedPromocionItems);
+            $newTotalQuantity = $updatedCarritoItems->sum('cantidad') + $updatedPromocionItems->sum('cantidad');
+
+            $itemsHtml = view('partials.cart_items', [
+                'carritoItems' => $updatedCarritoItems,
+                'promocionItems' => $updatedPromocionItems
+            ])->render();
 
             return response()->json([
                 'success' => true,
@@ -144,12 +155,11 @@ class CarritoController extends Controller
     public function updateQuantity(Request $request, CarritoItem $carritoItem)
     {
         $carritoItem->load('carrito');
-        // Asegúrate de que el CarritoItem pertenezca al usuario autenticado para seguridad
         if (Auth::id() != $carritoItem->carrito->usuario_id) {
             return response()->json(['success' => false, 'message' => 'Acceso no autorizado.'], 403);
         }
 
-        $action = $request->input('action'); // 'increase' o 'decrease'
+        $action = $request->input('action');
 
         try {
             if ($action === 'increase') {
@@ -160,19 +170,24 @@ class CarritoController extends Controller
                 return response()->json(['success' => false, 'message' => 'Acción no válida.'], 400);
             }
 
-            // Si la cantidad llega a cero o menos, se elimina el ítem
             if ($carritoItem->cantidad <= 0) {
                 $carritoItem->delete();
             } else {
                 $carritoItem->save();
             }
 
-            // Después de actualizar, recarga el carrito para obtener los nuevos datos
-            $updatedCarritoItems = $this->getCartItemsForUser(Auth::id());
-            $newTotalPrice = $this->calculateCartTotal($updatedCarritoItems);
-            $newTotalQuantity = $updatedCarritoItems->sum('cantidad');
+            // 🔁 Carga nuevamente productos y promociones
+            $userId = Auth::id();
+            $updatedCarritoItems = $this->getCartItemsForUser($userId);
+            $updatedPromocionItems = $this->getCartPromocionesForUser($userId);
 
-            $itemsHtml = view('partials.cart_items', ['carritoItems' => $updatedCarritoItems])->render();
+            $newTotalPrice = $this->calculateCartTotal($updatedCarritoItems) + $this->calculatePromocionesTotal($updatedPromocionItems);
+            $newTotalQuantity = $updatedCarritoItems->sum('cantidad') + $updatedPromocionItems->sum('cantidad');
+
+            $itemsHtml = view('partials.cart_items', [
+                'carritoItems' => $updatedCarritoItems,
+                'promocionItems' => $updatedPromocionItems, // ✅ Solución aquí
+            ])->render();
 
             return response()->json([
                 'success' => true,
@@ -185,6 +200,166 @@ class CarritoController extends Controller
             return response()->json(['success' => false, 'message' => 'Error al actualizar la cantidad: ' . $e->getMessage()], 500);
         }
     }
+
+    public function añadirPromocion(Request $request)
+    {
+        $request->validate([
+            'promocion_id' => 'required|exists:promociones,id',
+            'cantidad' => 'nullable|integer|min:1',
+        ]);
+
+        $promocionId = $request->input('promocion_id');
+        $cantidad = $request->input('cantidad', 1);
+
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => 'Debes iniciar sesión para añadir promociones al carrito.'], 401);
+        }
+
+        $userId = Auth::id();
+
+        try {
+            $carrito = Carrito::firstOrCreate(
+                ['usuario_id' => $userId],
+                ['estado' => 'activo']
+            );
+
+            $carritoPromocion = CarritoPromocion::where('carrito_id', $carrito->id)
+                ->where('promocion_id', $promocionId)
+                ->first();
+
+            if ($carritoPromocion) {
+                $carritoPromocion->cantidad += $cantidad;
+                $carritoPromocion->save();
+                $message = 'Cantidad de la promoción actualizada en el carrito.';
+            } else {
+                $promocion = Promocion::find($promocionId);
+                if (!$promocion) {
+                    return response()->json(['success' => false, 'message' => 'La promoción especificada no fue encontrada.'], 404);
+                }
+
+                CarritoPromocion::create([
+                    'carrito_id' => $carrito->id,
+                    'promocion_id' => $promocionId,
+                    'cantidad' => $cantidad,
+                    'precio_promocional_unitario' => $promocion->precio_promocional, // Guardar el precio en el momento
+                ]);
+                $message = 'Promoción añadida al carrito.';
+            }
+
+            $updatedCarritoItems = $this->getCartItemsForUser($userId);
+            $updatedPromocionItems = $this->getCartPromocionesForUser($userId);
+
+            $newTotalPrice = $this->calculateCartTotal($updatedCarritoItems) + $this->calculatePromocionesTotal($updatedPromocionItems);
+            $newTotalQuantity = $updatedCarritoItems->sum('cantidad') + $updatedPromocionItems->sum('cantidad');
+
+            $itemsHtml = view('partials.cart_items', [
+                'carritoItems' => $updatedCarritoItems,
+                'promocionItems' => $updatedPromocionItems
+            ])->render();
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'itemsHtml' => $itemsHtml,
+                'totalPrice' => $newTotalPrice,
+                'totalQuantity' => $newTotalQuantity
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error al añadir promoción al carrito: " . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Error al procesar la solicitud: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function removerPromocion(CarritoPromocion $carritoPromocion)
+    {
+        $carritoPromocion->load('carrito'); // Cargar la relación 'carrito'
+
+        // Asegurarse de que el usuario autenticado es el dueño del carrito
+        if (Auth::id() != $carritoPromocion->carrito->usuario_id) {
+            return response()->json(['success' => false, 'message' => 'Acceso no autorizado.'], 403);
+        }
+
+        try {
+            $carritoPromocion->delete();
+
+            $userId = Auth::id();
+            $updatedCarritoItems = $this->getCartItemsForUser($userId);
+            $updatedPromocionItems = $this->getCartPromocionesForUser($userId);
+
+            $newTotalPrice = $this->calculateCartTotal($updatedCarritoItems) + $this->calculatePromocionesTotal($updatedPromocionItems);
+            $newTotalQuantity = $updatedCarritoItems->sum('cantidad') + $updatedPromocionItems->sum('cantidad');
+
+            $itemsHtml = view('partials.cart_items', [
+                'carritoItems' => $updatedCarritoItems,
+                'promocionItems' => $updatedPromocionItems
+            ])->render();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Promoción eliminada del carrito.',
+                'itemsHtml' => $itemsHtml,
+                'totalPrice' => $newTotalPrice,
+                'totalQuantity' => $newTotalQuantity
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error al eliminar promoción del carrito: " . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Error al eliminar la promoción: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+    public function actualizarPromocion(Request $request, CarritoPromocion $carritoPromocion)
+    {
+        $carritoPromocion->load('carrito'); // Cargar la relación 'carrito'
+
+        // Asegurarse de que el usuario autenticado es el dueño del carrito
+        if (Auth::id() != $carritoPromocion->carrito->usuario_id) {
+            return response()->json(['success' => false, 'message' => 'Acceso no autorizado.'], 403);
+        }
+
+        $action = $request->input('action');
+
+        try {
+            if ($action === 'increase') {
+                $carritoPromocion->cantidad++;
+            } elseif ($action === 'decrease') {
+                $carritoPromocion->cantidad--;
+            } else {
+                return response()->json(['success' => false, 'message' => 'Acción no válida.'], 400);
+            }
+
+            if ($carritoPromocion->cantidad <= 0) {
+                $carritoPromocion->delete();
+            } else {
+                $carritoPromocion->save();
+            }
+
+            $userId = Auth::id();
+            $updatedCarritoItems = $this->getCartItemsForUser($userId);
+            $updatedPromocionItems = $this->getCartPromocionesForUser($userId);
+
+            $newTotalPrice = $this->calculateCartTotal($updatedCarritoItems) + $this->calculatePromocionesTotal($updatedPromocionItems);
+            $newTotalQuantity = $updatedCarritoItems->sum('cantidad') + $updatedPromocionItems->sum('cantidad');
+
+            $itemsHtml = view('partials.cart_items', [
+                'carritoItems' => $updatedCarritoItems,
+                'promocionItems' => $updatedPromocionItems
+            ])->render();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cantidad de promoción actualizada.',
+                'itemsHtml' => $itemsHtml,
+                'totalPrice' => $newTotalPrice,
+                'totalQuantity' => $newTotalQuantity
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error al actualizar cantidad de promoción: " . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Error al actualizar la cantidad de la promoción: ' . $e->getMessage()], 500);
+        }
+    }
+
+
 
     // --- Métodos de Ayuda (pueden ser privados o helpers) ---
 
@@ -220,4 +395,21 @@ class CarritoController extends Controller
         return $total;
     }
 
+
+    private function getCartPromocionesForUser(int $userId)
+    {
+        $carrito = Carrito::where('usuario_id', $userId)->first();
+        return $carrito ? CarritoPromocion::with('promocion')->where('carrito_id', $carrito->id)->get() : collect();
+    }
+
+    private function calculatePromocionesTotal($promocionItems)
+    {
+        $total = 0;
+        foreach ($promocionItems as $item) {
+            if ($item->promocion) {
+                $total += $item->promocion->precio_promocional * $item->cantidad;
+            }
+        }
+        return $total;
+    }
 }

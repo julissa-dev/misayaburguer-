@@ -885,3 +885,22 @@ hr {
 .remove-promo-btn:hover{
     color: #ff0000;
 }
+
+.quantity-btn-promo{
+    background-color: #2e0c4c;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.quantity-btn-promo:hover{
+    background-color: #4b1a77;
+}

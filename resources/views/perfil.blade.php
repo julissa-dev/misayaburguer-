@@ -16,8 +16,9 @@
 
     {{-- Incluye la plantilla del header --}}
     @include('partials.header', [
-        'contador' => $contador ?? 0, // Asegúrate de pasar estas variables si no están disponibles globalmente
+        'contador' => $contador ?? 0,
         'carritoItems' => $carritoItems ?? collect(),
+        'promocionItems' => $promocionItems ?? collect(), // <--- Agrega esta línea
         'totalPrice' => $totalPrice ?? 0,
     ])
 

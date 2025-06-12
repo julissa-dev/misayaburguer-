@@ -1,50 +1,341 @@
-.promo-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    justify-content: center;
-    padding: 2rem;
+/* Paleta de Colores Sugerida para Saya Burguer (Revisada para Minimalismo) */
+:root {
+    --saya-primary: #e44d26; /* Rojo anaranjado vibrante (para acentos clave) */
+    --saya-secondary: #ffc107; /* Amarillo cálido (para acentos sutiles o íconos) */
+    --saya-dark: #333333;     /* Gris oscuro para texto principal */
+    --saya-light: #f4f4f4;    /* Fondo muy claro, casi blanco */
+    --saya-white: #ffffff;    /* Blanco puro */
+    --saya-text-subtle: #777777; /* Gris medio para texto secundario */
+    --saya-border-light: #e0e0e0; /* Borde muy suave */
+    --saya-shadow-subtle: rgba(0, 0, 0, 0.08); /* Sombra muy ligera */
+    --saya-shadow-hover: rgba(0, 0, 0, 0.15); /* Sombra al hover ligeramente más visible */
 }
 
-.promo-card {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 1rem;
-    width: 300px;
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* Base Global */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--saya-light); /* Fondo general más claro */
+    color: var(--saya-dark);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Contenedor Principal */
+.promotions-main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px; /* Un poco más de padding superior/inferior */
+}
+
+/* Sección Hero (Banner Superior) - Minimalista */
+.hero-promotions {
+    background-color: var(--saya-white); /* Fondo blanco o muy claro */
+    color: var(--saya-dark); /* Color de texto oscuro para contraste */
+    padding: 80px 20px; /* Mantener un buen espacio */
     text-align: center;
+    border-radius: 12px;
+    margin-bottom: 60px; /* Más espacio debajo del hero */
+    box-shadow: 0 5px 15px var(--saya-shadow-subtle); /* Sombra más sutil */
+    border: 1px solid var(--saya-border-light); /* Borde sutil */
 }
 
-.promo-card img {
+.hero-content h1 {
+    font-size: 3.2em; /* Mantener impacto pero con menos color */
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: var(--saya-primary); /* El color de marca en el título principal */
+    letter-spacing: -0.5px; /* Ajuste para un look más moderno */
+}
+
+.hero-content p {
+    font-size: 1.4em;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.5;
+    color: var(--saya-text-subtle); /* Texto secundario más suave */
+}
+
+/* Títulos de Sección */
+.section-title {
+    font-size: 2.8em; /* Título más grande y con más impacto */
+    color: var(--saya-dark); /* Título en color oscuro */
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 800; /* Más audaz */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.section-subtitle {
+    font-size: 1.2em;
+    color: var(--saya-text-subtle);
+    text-align: center;
+    margin-bottom: 50px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Mensaje "No Promociones" */
+.no-promotions-message {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: var(--saya-white);
+    border-radius: 12px;
+    box-shadow: 0 5px 15px var(--saya-shadow-subtle);
+    margin-top: 40px;
+    color: var(--saya-text-subtle);
+    font-size: 1.2em;
+    border: 1px solid var(--saya-border-light);
+}
+
+.no-promotions-message i {
+    font-size: 3em;
+    color: var(--saya-primary); /* El icono mantiene el color de marca */
+    margin-bottom: 20px;
+}
+
+/* Grid de Promociones */
+.promotions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Mantener flexibilidad */
+    gap: 35px; /* Buen espacio entre tarjetas */
+    justify-content: center;
+}
+
+/* Tarjeta de Promoción */
+.promotion-card {
+    background-color: var(--saya-white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px var(--saya-shadow-subtle); /* Sombra más suave */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border: 1px solid var(--saya-border-light); /* Borde sutil */
+}
+
+.promotion-card:hover {
+    transform: translateY(-8px); /* Movimiento sutil */
+    box-shadow: 0 12px 30px var(--saya-shadow-hover); /* Sombra ligeramente más pronunciada */
+    border-color: var(--saya-primary); /* Borde se tiñe de color de marca al hover */
+}
+
+.promotion-image-wrapper {
+    position: relative;
     width: 100%;
-    border-radius: 8px;
+    height: 260px; /* Ajuste para que se vea bien la imagen */
+    overflow: hidden;
+    border-bottom: 1px solid var(--saya-border-light); /* Borde suave */
+    background-color: var(--saya-light); /* Fondo para el espacio vacío de la imagen */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px; /* Un poco de padding interno para la imagen */
 }
 
-.promo-precio {
-    color: #e63946;
-    font-weight: bold;
-    font-size: 1.2rem;
+.promotion-image {
+    max-width: 100%; /* Asegura que la imagen no se desborde */
+    max-height: 100%; /* Asegura que la imagen no se desborde */
+    object-fit: contain; /* CLAVE: La imagen se escalará para caber completamente. */
+    display: block; /* Elimina espacio extra debajo de la imagen */
 }
 
-.productos-incluidos {
+.promotion-price-overlay {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--saya-primary); /* El precio sí lleva el color de marca */
+    color: var(--saya-white);
+    padding: 10px 20px;
+    border-radius: 8px; /* Menos redondeado para un look más moderno */
+    font-weight: 700;
+    font-size: 1.8em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+.promotion-price-overlay .price-label {
+    font-size: 0.6em;
+    font-weight: 400;
+}
+
+.promotion-details {
+    padding: 25px;
     text-align: left;
-    margin: 1rem 0;
-    padding-left: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.btn-add-to-cart-promo {
-    background-color: #ff5722;
-    color: white;
+.promotion-name {
+    font-size: 2em;
+    color: var(--saya-dark);
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.promotion-description {
+    font-size: 1em;
+    color: var(--saya-text-subtle);
+    margin-bottom: 20px;
+    min-height: 45px;
+}
+
+.promotion-includes-section {
+    margin-top: 15px;
+    margin-bottom: 25px;
+    border-top: 1px dashed var(--saya-border-light); /* Borde más sutil */
+    padding-top: 15px;
+}
+
+.promotion-includes-section h4 {
+    font-size: 1.1em;
+    color: var(--saya-dark); /* Título de sección de productos en gris oscuro */
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.included-products-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.included-products-list li {
+    background-color: var(--saya-white); /* Fondo de ítem de lista blanco */
+    border-radius: 6px;
+    padding: 10px 15px; /* Más padding */
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 0.95em;
+    color: var(--saya-dark);
+    border: 1px solid var(--saya-border-light); /* Borde sutil */
+}
+
+.included-products-list li:last-child {
+    margin-bottom: 0;
+}
+
+.included-products-list li i {
+    color: var(--saya-secondary); /* Icono de checkmark amarillo */
+    margin-right: 12px; /* Más espacio */
+    font-size: 0.95em;
+}
+
+.included-products-list .no-items {
+    color: var(--saya-text-subtle);
+    font-style: italic;
+    background: none;
     border: none;
-    padding: 0.5rem 1rem;
-    font-weight: bold;
+    padding-left: 0;
+}
+
+.included-products-list .no-items i {
+    color: #ccc;
+}
+
+.add-to-cart-promo-btn {
+    background-color: var(--saya-primary); /* Botón de añadir al carrito sí lleva color de marca */
+    color: var(--saya-white);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: 700;
     cursor: pointer;
-    border-radius: 5px;
-    transition: 0.3s;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    width: 100%;
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.btn-add-to-cart-promo:hover {
-    background-color: #e64a19;
+.add-to-cart-promo-btn:hover {
+    background-color: #d13a1a;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
+.add-to-cart-promo-btn i {
+    font-size: 1.1em;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .hero-content h1 {
+        font-size: 2.8em;
+    }
+    .hero-content p {
+        font-size: 1.2em;
+    }
+    .section-title {
+        font-size: 2.2em;
+    }
+    .promotions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+    }
+    .promotion-card {
+        padding-bottom: 20px;
+    }
+    .promotion-image-wrapper {
+        height: 220px; /* Ajuste para pantallas medianas */
+    }
+    .promotion-price-overlay {
+        font-size: 1.5em;
+        padding: 8px 15px;
+    }
+    .promotion-name {
+        font-size: 1.6em;
+    }
+    .add-to-cart-promo-btn {
+        padding: 12px 20px;
+        font-size: 1.1em;
+    }
+}
+
+@media (max-width: 768px) {
+    .promotions-main-content {
+        padding: 30px 15px;
+    }
+    .hero-promotions {
+        padding: 60px 15px;
+        margin-bottom: 40px;
+    }
+    .hero-content h1 {
+        font-size: 2.2em;
+    }
+    .hero-content p {
+        font-size: 1em;
+    }
+    .section-title {
+        font-size: 1.8em;
+        margin-bottom: 30px;
+    }
+    .promotions-grid {
+        grid-template-columns: 1fr;
+    }
+    .promotion-card {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    .promotion-image-wrapper {
+        height: 200px; /* Ajuste para móviles */
+    }
+    .promotion-details {
+        padding: 20px;
+    }
+}
