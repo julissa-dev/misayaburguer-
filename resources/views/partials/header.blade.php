@@ -21,7 +21,8 @@
         <a href="{{ route('menu') }}" class="{{ Request::routeIs('menu') ? 'active-link' : '' }}">
             <i class="fa-solid fa-burger"></i> MENU
         </a>
-        <a href="{{ route('promocion') }}" class="{{ Request::routeIs('promocion') ? 'active-link' : '' }}"><i class="fa-solid fa-percent"></i> PROMOCIONES</a>
+        <a href="{{ route('promocion') }}" class="{{ Request::routeIs('promocion') ? 'active-link' : '' }}"><i
+                class="fa-solid fa-percent"></i> PROMOCIONES</a>
         {{-- INICIO: Dropdown de Delivery a Domicilio --}}
         <div class="dropdown"> {{-- Reutilizamos la clase 'dropdown' que ya tienes --}}
             <a href="#" id="deliveryToggle" class="dropdown-toggle"> {{-- Usamos dropdown-toggle --}}
@@ -38,9 +39,11 @@
                         {{-- La dirección actual del usuario --}}
                         <p class="user-delivery-address">
                             @if (Auth::user()->direccion)
-                                <i class="fas fa-map-marker-alt"></i> Tu dirección actual: <br> <strong id="currentDeliveryAddress">{{ Auth::user()->direccion }}</strong>
+                                <i class="fas fa-map-marker-alt"></i> Tu dirección actual: <br> <strong
+                                    id="currentDeliveryAddress">{{ Auth::user()->direccion }}</strong>
                             @else
-                                <i class="fas fa-exclamation-triangle"></i> <span id="currentDeliveryAddress">No tienes una dirección registrada.</span>
+                                <i class="fas fa-exclamation-triangle"></i> <span id="currentDeliveryAddress">No tienes una
+                                    dirección registrada.</span>
                             @endif
                         </p>
                         <button class="btn-manage-address" id="manageAddressBtn">
@@ -64,22 +67,26 @@
 
                     <div class="delivery-info-section">
                         <h4>Detalles del Envío en Trujillo</h4>
-                        <p><i class="fas fa-money-bill-wave"></i> Costo de Envío: <span class="delivery-price">S/ 7.00</span></p> {{-- Precio fijo --}}
-                        <p><i class="fas fa-clock"></i> Horario de Delivery: <span class="delivery-time">Lunes a Domingo: 6:00 PM - 1:00 AM</span></p>
-                        <p><i class="fas fa-motorcycle"></i> Tiempo Estimado: <span class="delivery-estimate">30 - 45 minutos (puede variar según la zona y la demanda)</span></p>
+                        <p><i class="fas fa-money-bill-wave"></i> Costo de Envío: <span class="delivery-price">S/
+                                7.00</span></p> {{-- Precio fijo --}}
+                        <p><i class="fas fa-clock"></i> Horario de Delivery: <span class="delivery-time">Lunes a
+                                Domingo: 6:00 PM - 1:00 AM</span></p>
+                        <p><i class="fas fa-motorcycle"></i> Tiempo Estimado: <span class="delivery-estimate">30 - 45
+                                minutos (puede variar según la zona y la demanda)</span></p>
                         <p><i class="fas fa-dollar-sign"></i> Cancelar antes del envío</p>
                         <p class="small-text">
-                            <i class="fas fa-exclamation-triangle"></i> Zonas de Cobertura: Nuestro servicio de delivery cubre todo Trujillo.
+                            <i class="fas fa-exclamation-triangle"></i> Zonas de Cobertura: Nuestro servicio de delivery
+                            cubre todo Trujillo.
                         </p>
                     </div>
 
-                    
-                    
+
+
                 </div>
             </div>
         </div>
         {{-- FIN: Dropdown de Delivery a Domicilio --}}
-        
+
         @auth {{-- Si el usuario está autenticado --}}
             <div class="dropdown">
                 <a href="#"
@@ -111,12 +118,20 @@
                 </div>
                 <div class="cart-dropdown-items" id="cartDropdownItems">
                     {{-- Aquí se incluirá el contenido de los ítems del carrito. --}}
-                    @include('partials.cart_items', ['carritoItems' => $carritoItems, 'promocionItems' => $promocionItems])
+                    @include('partials.cart_items', [
+                        'carritoItems' => $carritoItems,
+                        'promocionItems' => $promocionItems,
+                    ])
                 </div>
                 <div class="cart-dropdown-footer">
                     <span class="total-label">Total:</span>
                     <span class="total-price" id="cartTotalPrice">${{ number_format($totalPrice ?? 0, 2) }}</span>
-                    <a href="#" class="btn-checkout">Ir a Pagar</a>
+                    <button class="btn-checkout" id="btnIrAPagar">Ir a Pagar</button>
+
+                    <form id="formIrAPagar" action="{{ route('checkout.iniciar') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+
                 </div>
             </div>
         @endauth
@@ -126,3 +141,22 @@
         @endguest
     </nav>
 </header>
+
+<script>
+    document.getElementById('btnIrAPagar').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        Swal.fire({
+            title: '¿Deseas continuar con tu pedido?',
+            text: "Serás dirigido a la pantalla de confirmación de pago.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('formIrAPagar').submit();
+            }
+        });
+    });
+</script>

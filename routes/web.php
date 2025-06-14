@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\RegisterController;
@@ -24,7 +26,7 @@ Route::post('/register', [RegisterController::class, 'store'])->name('register.s
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/perfil', [HomeController::class, 'perfil'])->name('perfil');
+Route::get('/perfil', [PerfilController::class, 'perfil'])->name('perfil');
 
 Route::get('/loginp', [LoginController::class, 'index'])->name('pedido');
 
@@ -46,7 +48,13 @@ Route::delete('/carrito/remover-promocion/{carritoPromocion}', [CarritoControlle
 
 Route::put('/carrito/actualizar-promocion/{carritoPromocion}', [CarritoController::class, 'actualizarPromocion'])->name('carrito.updatePromo');
 
-
+Route::middleware(['auth'])->group(function () {
+    Route::post('/checkout', [CheckoutController::class, 'iniciar'])->name('checkout.iniciar');
+    Route::get('/checkout/{checkout}/confirmacion', [CheckoutController::class, 'confirmacion'])->name('checkout.confirmacion');
+    Route::post('/checkout/{checkout}/confirmar', [CheckoutController::class, 'confirmar'])->name('checkout.confirmar');
+    Route::post('/checkout/{checkout}/cancelar', [CheckoutController::class, 'cancelar'])->name('checkout.cancelar');
+    Route::get('/checkout/gracias', [CheckoutController::class, 'gracias'])->name('checkout.gracias');
+});
 
 
 

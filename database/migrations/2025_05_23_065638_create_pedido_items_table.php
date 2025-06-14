@@ -15,8 +15,13 @@ return new class extends Migration
             $table->id(); // id: int(11)
             $table->foreignId('pedido_id')->constrained('pedidos')->onDelete('cascade'); // pedido_id: int(11)
             $table->foreignId('producto_id')->constrained('productos'); // producto_id: int(11)
+            $table->bigInteger('promocion_id')->unsigned()->nullable();
             $table->integer('cantidad'); // cantidad: int(11)
             $table->decimal('precio_unit', 10, 2); // precio_unit: decimal(10,2)
+            $table->foreign('promocion_id')
+                ->references('id')->on('promociones')
+                ->onUpdate('RESTRICT')
+                ->onDelete('RESTRICT');
             // No se especifican timestamps en el diagrama.
         });
     }

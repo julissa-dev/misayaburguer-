@@ -99,6 +99,48 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    // Actualizar la vista de confirmación si existe
+    const resumen = document.getElementById("checkoutResumen");
+    if (resumen) {
+        // Limpiar
+        resumen.innerHTML = "";
+
+        // Productos
+        if (response.productos && response.productos.length > 0) {
+            resumen.innerHTML += `<h4>Productos</h4><ul>`;
+            response.productos.forEach((i) => {
+                resumen.innerHTML += `<li>${i.nombre} x${
+                    i.cantidad
+                } — S/. ${i.subtotal.toFixed(2)}</li>`;
+            });
+            resumen.innerHTML += `</ul>`;
+        }
+
+        // Promociones
+        if (response.promociones && response.promociones.length > 0) {
+            resumen.innerHTML += `<h4>Promociones</h4><ul>`;
+            response.promociones.forEach((p) => {
+                resumen.innerHTML += `<li><strong>${p.nombre}</strong> x${
+                    p.cantidad
+                } — S/. ${p.subtotal.toFixed(2)}<ul>`;
+                p.detalles.forEach((d) => {
+                    resumen.innerHTML += `<li>- ${d.producto} x${d.cantidad}</li>`;
+                });
+                resumen.innerHTML += `</ul></li>`;
+            });
+            resumen.innerHTML += `</ul>`;
+        }
+
+        // Subtotales
+        resumen.innerHTML += `
+        <p><strong>Subtotal:</strong> S/. ${response.subtotal.toFixed(2)}</p>
+        <p><strong>Delivery:</strong> S/. 7.00</p>
+        <p><strong>Total:</strong> <strong>S/. ${response.total.toFixed(
+            2
+        )}</strong></p>
+    `;
+    }
+
     if (cartButton && cartDropdown) {
         cartButton.addEventListener("click", function (event) {
             event.stopPropagation();

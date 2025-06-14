@@ -33,4 +33,9 @@ class Carrito extends Model
     {
         return $this->hasMany(CarritoItem::class);
     }
+
+    public function promociones()
+    {
+        return $this->hasMany(CarritoPromocion::class, 'carrito_id');
+    }
 }

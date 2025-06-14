@@ -19,6 +19,7 @@ return new class extends Migration
             $table->dateTime('actualizado_en')->useCurrent()->useCurrentOnUpdate(); // actualizado_en: datetime
             // No se especifica created_at. actualizado_en puede ser manejado por timestamps().
             // Si quieres ambos timestamps(), puedes reemplazar actualizado_en con $table->timestamps();
+            $table->timestamps(); // Esto añade created_at y updated_at
         });
     }
 

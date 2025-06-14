@@ -19,6 +19,7 @@ return new class extends Migration
             $table->dateTime('fecha')->useCurrent(); // fecha: datetime (asumiendo que es la fecha del pago)
             $table->string('referencia', 100)->nullable(); // referencia: varchar(100) (ej. ID de transacción)
             // No se especifican timestamps en el diagrama.
+            $table->timestamps();
         });
     }
 
