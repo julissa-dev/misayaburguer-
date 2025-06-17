@@ -46,7 +46,7 @@ class Pedido extends Model
     /**
      * Relación con los Pagos asociados a este pedido.
      */
-    public function pagos()
+    public function pago()
     {
         return $this->hasMany(Pago::class, 'pedido_id');
     }

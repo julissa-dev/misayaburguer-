@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id(); // id: int(11)
             $table->foreignId('pedido_id')->constrained('pedidos')->onDelete('cascade'); // pedido_id: int(11)
             $table->string('metodo', 50); // metodo: varchar(50)
-            $table->enum('estado', ['pendiente', 'pagado', 'fallido'])->default('pendiente'); // estado: enum
+            $table->enum('estado', ['pendiente', 'pagado', 'fallido', 'reembolso pendiente'])->default('pendiente'); // estado: enum
             $table->dateTime('fecha')->useCurrent(); // fecha: datetime (asumiendo que es la fecha del pago)
-            $table->string('referencia', 100)->nullable(); // referencia: varchar(100) (ej. ID de transacción)
+            $table->string('referencia')->nullable(); // referencia: varchar(100) (ej. ID de transacción)
             // No se especifican timestamps en el diagrama.
             $table->timestamps();
         });

@@ -4,12 +4,14 @@ use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PromocionController;
 use App\Http\Controllers\RegisterController;
 use App\Models\Usuario;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -54,7 +56,23 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/checkout/{checkout}/confirmar', [CheckoutController::class, 'confirmar'])->name('checkout.confirmar');
     Route::post('/checkout/{checkout}/cancelar', [CheckoutController::class, 'cancelar'])->name('checkout.cancelar');
     Route::get('/checkout/gracias', [CheckoutController::class, 'gracias'])->name('checkout.gracias');
+    Route::get('/paypal/confirmar-pedido/{orderID}/{checkout}', [PaymentController::class, 'confirmarPedido']);
+
+    Route::get('/mis-pedidos', [PerfilController::class, 'misPedidos'])->name('perfil.misPedidos');
 });
+
+Route::get('/api/pedidos/{pedido}', function (App\Models\Pedido $pedido) {
+    if ($pedido->usuario_id !== Auth::id()) return response()->json(['success' => false], 403);
+
+    $pedido->load(['items.producto', 'pago']);
+
+    return response()->json([
+        'success' => true,
+        'pedido' => $pedido,
+    ]);
+})->middleware('auth');
+
+
 
 
 

@@ -43,7 +43,19 @@ class CheckoutController extends Controller
 
     public function confirmacion(Checkout $checkout)
     {
-        return view('checkout.confirmacion', compact('checkout'));
+        $subtotal = $checkout->total;
+        $delivery = 7.0;
+        $totalFinalPen = $subtotal + $delivery;
+
+        $tipoCambio = 3.6; // Puedes actualizar esto con una API en el futuro
+        $totalFinalUsd = round($totalFinalPen / $tipoCambio, 2);
+
+        return view('checkout.confirmacion', [
+            'checkout' => $checkout,
+            'paypalClientId' => env('PAYPAL_CLIENT_ID'), // ✅ CORRECTO
+            'totalFinalPen' => $totalFinalPen,
+            'totalFinalUsd' => $totalFinalUsd
+        ]);
     }
 
     public function confirmar(Request $request, Checkout $checkout)
@@ -52,7 +64,7 @@ class CheckoutController extends Controller
             return redirect('/')->with('error', 'Este checkout ya fue procesado.');
         }
 
-        
+
 
         DB::transaction(function () use ($checkout, $request) {
             $carrito = Carrito::with(['items.producto', 'promociones.promocion.detalles.producto'])
@@ -131,16 +143,26 @@ class CheckoutController extends Controller
                     $totalPedido += $itemData['cantidad'] * $itemData['precio_unit'];
                 }
             }
+            $delivery = 7;
+            $totalPedido += $delivery; // Agregar costo de envío
 
             // ✅ Actualizar total del pedido
             $pedido->update(['total' => $totalPedido]);
 
-            // ✅ Guardar método de pago
+            if ($request->hasFile('comprobante')) {
+                $archivo = $request->file('comprobante');
+                $ruta = $archivo->store('comprobantes', 'public'); // guarda en storage/app/public/comprobantes
+                $referencia = $ruta;
+            } else {
+                $referencia = null;
+            }
+
             Pago::create([
                 'pedido_id' => $pedido->id,
                 'metodo' => $request->metodo_pago,
                 'estado' => 'pagado',
-                'fecha' => now()
+                'fecha' => now(),
+                'referencia' => $referencia
             ]);
 
             // ✅ Crear registro de envío
@@ -158,7 +180,7 @@ class CheckoutController extends Controller
             $carrito->promociones()->delete();
         });
 
-        return redirect()->route('checkout.gracias');
+        return redirect()->route('perfil.misPedidos');
     }
 
     public function cancelar(Checkout $checkout)
@@ -174,6 +196,4 @@ class CheckoutController extends Controller
     {
         return view('checkout.gracias');
     }
-
-    
 }

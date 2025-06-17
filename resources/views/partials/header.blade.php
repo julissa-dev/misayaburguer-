@@ -98,7 +98,7 @@
                 <div class="dropdown-menu" id="userDropdownMenu">
                     <a href="{{ route('perfil') }}" class="{{ Request::routeIs('perfil') ? 'active-link' : '' }}">Perfil
                     </a>
-                    <a href="{{ route('pedido') }}" class="{{ Request::routeIs('pedido') ? 'active-link' : '' }}">Mis
+                    <a href="{{ route('perfil.misPedidos') }}" class="{{ Request::routeIs('perfil.misPedidos') ? 'active-link' : '' }}">Mis
                         Pedidos
                     </a>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST">

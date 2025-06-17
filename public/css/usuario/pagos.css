@@ -1,0 +1,428 @@
+/* GENERALES */
+body {
+    font-family: 'Inter', 'Arial', sans-serif; /* Fuente limpia, o una sans-serif por defecto */
+    background-color: #f5f5f5; /* Fondo muy claro */
+    color: #333;
+    line-height: 1.6;
+}
+
+.main-content {
+    padding: 40px 0;
+}
+
+.container.confirmation-container {
+    max-width: 700px; /* Un poco más estrecho para un look minimalista */
+    margin: 30px auto;
+    background-color: #ffffff;
+    border-radius: 8px; /* Bordes sutiles */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Sombra mínima */
+    padding: 35px;
+}
+
+.page-title {
+    font-size: 2em;
+    color: #222;
+    text-align: center;
+    margin-bottom: 40px;
+    font-weight: 600;
+}
+
+/* SECCIONES */
+.section-card {
+    padding: 25px 0; /* Padding interno solo vertical */
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee; /* Separador sutil */
+}
+
+.section-card:last-of-type {
+    border-bottom: none; /* Sin borde en la última sección */
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: 600;
+    padding-bottom: 10px;
+    position: relative; /* Para el posible pseudo-elemento decorativo */
+}
+
+/* Eliminar iconos de títulos en minimalismo */
+/* .section-title i { display: none; } */
+
+
+/* LISTA DE PRODUCTOS/PROMOS */
+.order-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Para alinear al inicio en promo-item */
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0; /* Línea de separación muy clara */
+    font-size: 1em;
+    color: #555;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.item-name {
+    flex-grow: 1;
+    font-weight: 500;
+}
+
+.item-price {
+    font-weight: 600;
+    color: #222;
+    margin-left: 15px; /* Espacio para que el precio no se pegue al nombre */
+    white-space: nowrap; /* Evita que el precio se rompa en varias líneas */
+}
+
+.promo-item {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px 0 10px 0; /* Más padding para promo */
+    background-color: #fdfdfd; /* Fondo apenas perceptible */
+    border-left: 3px solid #ffcc00; /* Un color de acento más sutil */
+    padding-left: 15px;
+    margin-left: -15px; /* Compensa el padding-left para alinear con otros items */
+}
+
+.promo-title {
+    width: 100%;
+    margin-bottom: 5px;
+    color: #e74c3c; /* Un toque de color para la promo */
+    font-weight: 600;
+}
+
+.promo-unit-price {
+    font-size: 0.9em;
+    color: #777;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.promo-details-list {
+    list-style: none; /* Eliminar viñetas */
+    margin: 0 0 0 15px;
+    padding: 0;
+    font-size: 0.9em;
+    color: #666;
+    border-left: 1px solid #ddd; /* Una línea para los detalles */
+    padding-left: 10px;
+}
+
+.promo-details-list li {
+    padding: 2px 0;
+}
+
+
+/* TOTALES */
+.summary-totals {
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.summary-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.summary-line span:first-child {
+    font-weight: 500;
+}
+
+.total-line {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #222;
+    border-top: 1px dashed #ccc; /* Línea de puntos para separar total */
+    padding-top: 15px;
+    margin-top: 15px;
+}
+
+.total-line .price-value {
+    color: #e74c3c; /* Color de Saya Burguer para el total */
+    font-weight: 700;
+}
+
+
+/* FORMULARIO */
+.radio-option {
+    display: flex;
+    align-items: flex-start; /* Alinear al inicio si el texto es largo */
+    margin-bottom: 15px;
+}
+
+.radio-option input[type="radio"] {
+    margin-right: 12px;
+    margin-top: 3px; /* Ajuste vertical */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #bbb; /* Borde más sutil */
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0; /* Evita que el radio button se comprima */
+}
+
+.radio-option input[type="radio"]:checked {
+    background-color: #333; /* Negro o gris oscuro para checked */
+    border-color: #333;
+}
+
+.radio-option input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.radio-option label {
+    font-size: 1em;
+    color: #555;
+    cursor: pointer;
+}
+
+.text-input,
+.select-input,
+.file-input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px; /* Bordes más rectos */
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+    background-color: #fff;
+}
+
+.text-input:focus,
+.select-input:focus,
+.file-input:focus {
+    border-color: #666; /* Borde más oscuro al enfocar */
+    outline: none;
+    box-shadow: none; /* Eliminar sombra al enfocar */
+}
+
+.text-input:disabled {
+    background-color: #f9f9f9;
+    cursor: not-allowed;
+    color: #888;
+}
+
+/* QR y Comprobante */
+.qr-payment-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 25px;
+    padding: 25px;
+    background-color: #fafafa; /* Fondo muy claro */
+    border-radius: 8px;
+    border: 1px solid #eee; /* Borde muy sutil */
+}
+
+.qr-instruction {
+    font-size: 1em;
+    color: #555;
+    text-align: center;
+    font-weight: 500;
+}
+
+.qr-code-img {
+    max-width: 160px; /* Un poco más pequeño */
+    height: auto;
+    border: none; /* Eliminar borde del QR */
+    box-shadow: none; /* Eliminar sombra del QR */
+    border-radius: 4px;
+}
+
+.file-upload-section {
+    margin-top: 25px;
+    padding: 25px;
+    background-color: #fafafa;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.file-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #555;
+    font-size: 1em;
+}
+
+/* BOTONES */
+.btn {
+    display: block; /* Ocupa todo el ancho */
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 6px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 600;
+    border: none; /* Eliminar bordes de botones */
+}
+
+.btn-confirm {
+    background-color: #333; /* Negro o gris oscuro para el botón principal */
+    color: white;
+    margin-bottom: 15px;
+}
+
+.btn-confirm:hover {
+    background-color: #555;
+    transform: translateY(-1px);
+}
+
+.btn-cancel {
+    background-color: #eee; /* Gris claro para el botón secundario */
+    color: #555;
+    margin-top: 15px;
+}
+
+.btn-cancel:hover {
+    background-color: #ddd;
+    transform: translateY(-1px);
+}
+
+/* ESTILOS ESPECÍFICOS DE PAYPAL */
+.paypal-section {
+    text-align: center;
+    padding: 25px 0; /* Menos padding */
+    margin-top: 20px; /* Más espacio para separarlo de los otros botones */
+    border-top: 1px solid #eee; /* Un separador simple */
+}
+
+.paypal-section .section-title {
+    margin-bottom: 20px;
+    padding-bottom: 0;
+    border-bottom: none; /* Eliminar borde del título de PayPal */
+}
+
+#paypal-button-container {
+    max-width: 280px; /* Un poco más pequeño */
+    margin: 15px auto 0 auto;
+}
+
+/* ESTILOS PARA SWEETALERT2 (minimalista) */
+.swal2-popup {
+    font-family: 'Inter', 'Arial', sans-serif;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); /* Sombra más suave */
+}
+
+.swal2-title {
+    font-size: 1.6em;
+    color: #333;
+    font-weight: 600;
+}
+
+.swal2-content {
+    font-size: 1em;
+    color: #555;
+}
+
+.swal2-confirm-button {
+    background-color: #333 !important;
+    border-radius: 5px !important;
+    font-size: 1em !important;
+    padding: 10px 20px !important;
+}
+.swal2-confirm-button:hover {
+    background-color: #555 !important;
+}
+
+.swal2-cancel-button {
+    background-color: #ccc !important;
+    color: #333 !important;
+    border-radius: 5px !important;
+    font-size: 1em !important;
+    padding: 10px 20px !important;
+}
+.swal2-cancel-button:hover {
+    background-color: #bbb !important;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    .container.confirmation-container {
+        padding: 25px;
+        margin: 20px;
+    }
+
+    .page-title {
+        font-size: 1.8em;
+    }
+
+    .section-title {
+        font-size: 1.3em;
+    }
+
+    .order-item,
+    .summary-line {
+        font-size: 0.95em;
+    }
+
+    .total-line {
+        font-size: 1.2em;
+    }
+
+    .btn {
+        padding: 12px 18px;
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .container.confirmation-container {
+        margin: 15px;
+        padding: 20px;
+    }
+
+    .page-title {
+        font-size: 1.5em;
+    }
+
+    .section-title {
+        font-size: 1.1em;
+    }
+
+    .qr-code-img {
+        max-width: 130px;
+    }
+
+    .btn {
+        font-size: 0.9em;
+        padding: 10px 15px;
+    }
+}
