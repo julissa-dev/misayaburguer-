@@ -11,6 +11,8 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PedidoConfirmadoMailable;
 
 class PaymentController extends Controller
 {
@@ -148,6 +150,15 @@ class PaymentController extends Controller
 
                 $pedido->update(['total' => $totalPedido]);
 
+                $pedidoConRelaciones = $pedido->load([
+                    'items.producto',
+                    'items.promocion.detalles.producto', // si deseas mostrar detalles de promociones
+                    'usuario',
+                    'pago'
+                ]);
+                Mail::to($pedidoConRelaciones->usuario->email)
+                    ->send(new PedidoConfirmadoMailable($pedidoConRelaciones));
+                    
                 Pago::create([
                     'pedido_id' => $pedido->id,
                     'metodo' => 'paypal',

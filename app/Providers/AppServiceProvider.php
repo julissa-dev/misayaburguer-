@@ -5,9 +5,13 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\RepartidorMiddleware;
+
 use App\Models\Carrito;
-use App\Models\CarritoItem; // Asegúrate de importar CarritoItem
-use App\Models\CarritoPromocion; // Asegúrate de importar CarritoPromocion
+use App\Models\CarritoItem;
+use App\Models\CarritoPromocion;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +28,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // ✅ REGISTRO DEL MIDDLEWARE PERSONALIZADO "admin"
+        Route::aliasMiddleware('admin', AdminMiddleware::class);
+
+        Route::aliasMiddleware('repartidor', RepartidorMiddleware::class);
+
+
+        // ✅ LÓGICA PARA CARRITO Y PROMOCIONES (ya estaba antes, no se borra)
         View::composer('*', function ($view) {
             if (Auth::check()) {
                 $carrito = Carrito::where('usuario_id', Auth::id())->first();
@@ -31,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
                 $carritoItems = collect();
                 $promocionItems = collect();
                 $totalPrice = 0;
-                $contador = 0; // Inicializar aquí
+                $contador = 0;
 
                 if ($carrito) {
                     $carritoItems = CarritoItem::with('producto')
@@ -42,24 +53,20 @@ class AppServiceProvider extends ServiceProvider
                         ->where('carrito_id', $carrito->id)
                         ->get();
 
-                    // --- CAMBIO CLAVE AQUÍ ---
-                    // Calcular el contador sumando las cantidades de ambos tipos de ítems
                     $contador = $carritoItems->sum('cantidad');
-                    $contador += $promocionItems->sum('cantidad'); // Suma las cantidades de las promociones (cuántas promos completas)
+                    $contador += $promocionItems->sum('cantidad');
 
-                    // Recalcular el totalPrice de forma consistente aquí también
                     foreach ($carritoItems as $item) {
-                        if ($item->producto) { // Siempre es buena práctica verificar
+                        if ($item->producto) {
                             $totalPrice += $item->cantidad * $item->producto->precio;
                         }
                     }
 
                     foreach ($promocionItems as $promo) {
-                        if ($promo->promocion) { // Siempre es buena práctica verificar
+                        if ($promo->promocion) {
                             $totalPrice += $promo->cantidad * $promo->promocion->precio_promocional;
                         }
                     }
-
                 }
 
                 $view->with(compact('carritoItems', 'promocionItems', 'contador', 'totalPrice'));

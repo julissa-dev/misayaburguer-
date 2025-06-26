@@ -22,56 +22,75 @@ class HomeController extends Controller
         $totalPrice = 0;
 
         if (Auth::check()) {
-            $carrito = Carrito::where('usuario_id', Auth::id())->first(); // 
+            $carrito = Carrito::where('usuario_id', Auth::id())->first();
 
             if ($carrito) {
                 // Cargar productos en el carrito
                 $carritoItems = CarritoItem::with('producto')
-                    ->where('carrito_id', $carrito->id) // 
+                    ->where('carrito_id', $carrito->id)
                     ->get();
 
-                $contador += $carritoItems->sum('cantidad'); // 
+                $contador += $carritoItems->sum('cantidad');
 
                 foreach ($carritoItems as $item) {
                     if ($item->producto) {
-                        $totalPrice += $item->producto->precio * $item->cantidad; // 
+                        $totalPrice += $item->producto->precio * $item->cantidad;
                     }
                 }
 
                 // Cargar promociones en el carrito, incluyendo los detalles de la promoción
-                // y los productos dentro de esos detalles.
-                $promocionItems = CarritoPromocion::with(['promocion.detalles.producto']) // Carga anidada para optimizar 
-                    ->where('carrito_id', $carrito->id) // 
+                $promocionItems = CarritoPromocion::with(['promocion.detalles.producto'])
+                    ->where('carrito_id', $carrito->id)
                     ->get();
 
-                $contador += $promocionItems->sum('cantidad'); // 
+                $contador += $promocionItems->sum('cantidad');
 
                 foreach ($promocionItems as $promo) {
                     if ($promo->promocion) {
-                        $totalPrice += $promo->promocion->precio_promocional * $promo->cantidad; // 
+                        $totalPrice += $promo->promocion->precio_promocional * $promo->cantidad;
                     }
                 }
             }
         }
 
-        // Promociones activas para mostrar al usuario, cargando sus detalles y los productos asociados
-        $promociones = Promocion::where('activa', 1) // 
-            ->with('detalles.producto') // Carga anidada: detalles y sus productos
+        // --- Nuevos datos para las secciones dinámicas (ahora al azar) ---
+
+        // Productos para la sección "Delicias"
+        // Obtener la categoría "Hamburguesas"
+        $categoriaHamburguesas = Categoria::where('nombre', 'Hamburguesas')->first();
+
+        $deliciasOrdenadas = collect(); // Inicializar como colección vacía
+
+        if ($categoriaHamburguesas) {
+            // Se obtienen 3 productos al azar de la categoría "Hamburguesas".
+            $deliciasOrdenadas = Producto::where('categoria_id', $categoriaHamburguesas->id)
+                                        ->inRandomOrder()
+                                        ->take(3)
+                                        ->get();
+        }
+
+
+        // Promociones activas para el carrusel
+        // Se obtienen las promociones activas en orden aleatorio.
+        $promociones = Promocion::where('activa', 1)
+            ->with('detalles.producto')
+            ->inRandomOrder() // Obtener promociones activas al azar
             ->get();
 
-        // Productos opcionales, por si se usan en la vista
+        // Productos opcionales, por si se usan en la vista general (mantengo tu línea)
         $productos = Producto::all();
 
-        // 5. Retorna la vista 'home' pasando todas las variables necesarias.
-        // La función 'compact()' es una forma concisa de pasar variables a la vista.
+
+        // Retorna la vista 'home' pasando todas las variables necesarias.
         return view('home', compact(
             'contador',
-            'productos',
+            'productos', // Puede que no se use directamente si solo hay delicias y promociones
             'carritoItems',
             'carrito',
             'totalPrice',
-            'promociones',
-            'promocionItems'
+            'promociones', // Para el carrusel de promociones
+            'promocionItems', // Para items del carrito que son promociones
+            'deliciasOrdenadas' // Para la sección "Delicias" (ahora productos al azar de hamburguesas)
         ));
     }
 

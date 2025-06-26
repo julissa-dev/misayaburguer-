@@ -1,0 +1,364 @@
+/* Contenedor principal */
+
+
+.mis-pedidos-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.mis-pedidos-container h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    font-weight: bold;
+}
+
+/* Tarjeta de pedido */
+.pedido-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out;
+}
+.pedido-card:hover {
+    transform: translateY(-3px);
+}
+.pedido-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #f0f0f0;
+    padding-bottom: 10px;
+}
+.pedido-header .pedido-id {
+    font-weight: bold;
+    color: #e74c3c;
+}
+.pedido-header .pedido-date {
+    font-size: 0.9em;
+    color: #888;
+}
+.pedido-body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+.pedido-body p {
+    font-size: 0.95em;
+    color: #666;
+}
+.pedido-body .pedido-total {
+    font-weight: bold;
+    color: #333;
+}
+.pedido-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+/* Estados para tarjeta */
+.pedido-card.estado-asignado {
+    border-left: 5px solid #3498db;
+}
+.pedido-card.estado-en-ruta {
+    border-left: 5px solid #f39c12;
+}
+.pedido-card.estado-entregado {
+    border-left: 5px solid #28a745;
+}
+
+/* Badge de estado */
+.pedido-estado-badge,
+.envio-estado-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+}
+.pedido-estado-badge.estado-asignado,
+.envio-estado-badge.estado-asignado {
+    background-color: #a7f3d0; /* Verde-água claro */
+}
+.pedido-estado-badge.estado-en-ruta,
+.envio-estado-badge.estado-en-ruta {
+    background-color: #fdba74; /* Laranja suave */
+}
+.pedido-estado-badge.estado-entregado,
+.envio-estado-badge.estado-entregado {
+    background-color: #86efac; /* Verde claro */
+}
+
+/* Botones */
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-primary {
+    background-color: #e74c3c;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #c0392b;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+}
+.modal-overlay[style*="display: flex"] {
+    opacity: 1;
+    visibility: visible;
+}
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    transform: scale(1);
+}
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    color: #888;
+    cursor: pointer;
+}
+.modal-title {
+    text-align: center;
+    color: #e74c3c;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+/* Detalles del pedido */
+.pedido-items-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 20px 0;
+}
+.pedido-items-list .product-item,
+.pedido-items-list .promo-item {
+    background-color: #f8f8f8;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.pedido-items-list .promo-item {
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #f0f8ff;
+    border: 1px solid #d0e8ff;
+}
+.pedido-items-list .promo-item strong {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    color: #e74c3c;
+}
+.promo-sub-items {
+    list-style: disc;
+    padding-left: 25px;
+    margin-top: 5px;
+    color: #555;
+    font-size: 0.9em;
+}
+.item-price {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Subtotales */
+.order-summary {
+    border-top: 1px dashed #eee;
+    margin-top: 15px;
+    padding-top: 10px;
+}
+.order-summary p {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95em;
+}
+.modal-total {
+    text-align: right;
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-top: 15px;
+    border-top: 2px solid #e74c3c;
+    padding-top: 15px;
+    color: #e74c3c;
+}
+
+/* Seguimiento estilo Rappi */
+.envio-tracking-rappi {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+.tracking-step-rappi {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 80px;
+}
+.tracking-step-rappi .circle-rappi {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2em;
+    margin-bottom: 6px;
+}
+.tracking-step-rappi .label {
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #666;
+}
+.tracking-step-rappi.activo .circle-rappi {
+    background-color: #e74c3c;
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.6);
+}
+.tracking-step-rappi.completado .circle-rappi {
+    background-color: #2ecc71;
+}
+.tracking-step-rappi.pendiente .circle-rappi {
+    background-color: #ccc;
+}
+.linea-rappi {
+    width: 30px;
+    height: 4px;
+    background-color: #ccc;
+    margin: 0 5px;
+    border-radius: 2px;
+}
+.linea-rappi.completado {
+    background-color: #2ecc71;
+}
+.linea-rappi.activo {
+    background-color: #e74c3c;
+}
+
+/* Mensaje contextual */
+.tracking-message {
+    background-color: #eef7ff;
+    border-left: 5px solid #3498db;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    color: #333;
+    font-size: 0.95em;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+.tracking-message .fas {
+    color: #3498db;
+    font-size: 1.2em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pedido-body {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .pedido-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+    .modal-content {
+        padding: 20px;
+    }
+    .modal-title {
+        font-size: 1.5em;
+    }
+}
+@media (max-width: 480px) {
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+    .envio-tracking-rappi {
+        flex-wrap: nowrap;
+        overflow-x: hidden;
+        justify-content: space-between;
+        padding: 0 5px;
+    }
+
+    .tracking-step-rappi {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .linea-rappi {
+        width: 10px;
+        flex: 0 0 10px;
+    }
+
+    .tracking-step-rappi .label {
+        font-size: 0.75em;
+        word-break: break-word;
+    }
+}

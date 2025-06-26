@@ -85,9 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
             response.totalQuantity !== undefined
         ) {
             cartDropdownItems.innerHTML = response.itemsHtml;
-            cartTotalPriceElement.textContent = `$${response.totalPrice.toFixed(
-                2
-            )}`;
+            cartTotalPriceElement.textContent = `S/ ${response.totalPrice.toFixed(2)}`;
+
             cartCountElement.textContent = response.totalQuantity;
         } else {
             console.error("Respuesta AJAX inválida:", response);
@@ -509,7 +508,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }" alt="${product.nombre}">
                 <div class="details">
                     <h4>${product.nombre}</h4>
-                    <p>$${parseFloat(product.precio).toFixed(2)}</p>
+                    <p>S/${parseFloat(product.precio).toFixed(2)}</p>
                 </div>
                 <div class="actions">
                     <button class="btn-add-to-cart-search" data-product-id="${

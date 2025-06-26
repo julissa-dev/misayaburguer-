@@ -125,7 +125,7 @@
                 </div>
                 <div class="cart-dropdown-footer">
                     <span class="total-label">Total:</span>
-                    <span class="total-price" id="cartTotalPrice">${{ number_format($totalPrice ?? 0, 2) }}</span>
+                    <span class="total-price" id="cartTotalPrice">S/{{ number_format($totalPrice ?? 0, 2) }}</span>
                     <button class="btn-checkout" id="btnIrAPagar">Ir a Pagar</button>
 
                     <form id="formIrAPagar" action="{{ route('checkout.iniciar') }}" method="POST" style="display: none;">

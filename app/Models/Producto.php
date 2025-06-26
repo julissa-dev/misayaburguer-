@@ -61,4 +61,15 @@ class Producto extends Model
     {
         return $this->belongsTo(Categoria::class);
     }
+
+
+    public function promociones()
+    {
+        return $this->belongsToMany(Promocion::class, 'promocion_detalle', 'producto_id', 'promocion_id')
+                    ->withTimestamps();
+    }
+
+    protected $casts = [
+        'disponible' => 'boolean',
+    ];
 }

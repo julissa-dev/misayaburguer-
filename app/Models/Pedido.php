@@ -46,9 +46,9 @@ class Pedido extends Model
     /**
      * Relación con los Pagos asociados a este pedido.
      */
-    public function pago()
+    public function pago() // <--- Asegúrate de que esta relación sea hasOne
     {
-        return $this->hasMany(Pago::class, 'pedido_id');
+        return $this->hasOne(Pago::class); // Un pedido tiene un pago
     }
 
     /**
@@ -74,5 +74,17 @@ class Pedido extends Model
         return $this->items->sum(function ($item) {
             return $item->cantidad * $item->precio_unit;
         });
+    }
+
+
+
+    public function pagos()
+    {
+        return $this->hasMany(\App\Models\Pago::class);
+    }
+
+    public function ultimoPago()
+    {
+        return $this->hasOne(\App\Models\Pago::class)->latest();
     }
 }

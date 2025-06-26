@@ -15,16 +15,16 @@
                         <button class="quantity-btn increase-quantity" data-item-id="{{ $item->id }}"
                             data-action="increase">+</button>
                     </div>
-                    <span class="item-price">${{ number_format($item->producto->precio * $item->cantidad, 2) }}</span>
+                    <span class="item-price">S/{{ number_format($item->producto->precio * $item->cantidad, 2) }}</span>
                 </div>
-                <button class="remove-item-btn" data-item-id="{{ $item->id }}">&times;</button>
+                {{-- <button class="remove-item-btn" data-item-id="{{ $item->id }}">&times;</button> --}}
             </div>
         @else
             <div class="cart-item" data-item-id="{{ $item->id }}">
                 <div class="item-details">
                     <span class="item-name">Producto no disponible</span>
                     <span class="item-quantity">Cantidad: {{ $item->cantidad }}</span>
-                    <span class="item-price">$0.00</span>
+                    <span class="item-price">S/0.00</span>
                 </div>
                 <button class="remove-item-btn" data-item-id="{{ $item->id }}">&times;</button>
             </div>
@@ -53,17 +53,17 @@
                             data-action="increase">+</button>
                     </div>
                     <span
-                        class="item-price">${{ number_format($promoItem->promocion->precio_promocional * $promoItem->cantidad, 2) }}</span>
+                        class="item-price">S/{{ number_format($promoItem->promocion->precio_promocional * $promoItem->cantidad, 2) }}</span>
                     {{-- **SECCIÓN ELIMINADA: No se muestran los productos del combo aquí** --}}
                 </div>
-                <button class="remove-promo-btn" data-promo-id="{{ $promoItem->id }}">&times;</button>
+                {{-- <button class="remove-promo-btn" data-promo-id="{{ $promoItem->id }}">&times;</button> --}}
             </div>
         @else
             <div class="cart-item">
                 <div class="item-details">
                     <span class="item-name">Promoción no disponible</span>
                     <span class="item-quantity">Cantidad: {{ $promoItem->cantidad }}</span>
-                    <span class="item-price">$0.00</span>
+                    <span class="item-price">S/0.00</span>
                 </div>
                 <button class="remove-item-btn" data-item-id="{{ $promoItem->id }}">&times;</button>
             </div>

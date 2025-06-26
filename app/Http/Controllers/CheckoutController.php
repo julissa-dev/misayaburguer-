@@ -10,13 +10,15 @@ use App\Models\Envio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PedidoConfirmadoMailable;
 
 class CheckoutController extends Controller
 {
     public function iniciar(Request $request)
     {
         $usuarioId = Auth::id();
-        $carrito = Carrito::with(['items.producto', 'promociones.promocion.detalles.producto']) // ← cambiado aquí
+        $carrito = Carrito::with(['items.producto', 'promociones.promocion.detalles.producto'])
             ->where('usuario_id', $usuarioId)
             ->first();
 
@@ -86,6 +88,9 @@ class CheckoutController extends Controller
                 'total' => 0,
             ]);
 
+
+
+
             $totalPedido = 0;
 
             foreach ($carrito->items as $carritoItem) {
@@ -148,6 +153,15 @@ class CheckoutController extends Controller
 
             // ✅ Actualizar total del pedido
             $pedido->update(['total' => $totalPedido]);
+
+            $pedidoConRelaciones = $pedido->load([
+                'items.producto',
+                'items.promocion.detalles.producto', // si deseas mostrar detalles de promociones
+                'usuario',
+                'pago'
+            ]);
+            Mail::to($pedidoConRelaciones->usuario->email)
+                ->send(new PedidoConfirmadoMailable($pedidoConRelaciones));
 
             if ($request->hasFile('comprobante')) {
                 $archivo = $request->file('comprobante');

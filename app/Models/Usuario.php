@@ -20,11 +20,8 @@ class Usuario extends Authenticatable // ¡Ahora extiende de Authenticatable!
      * Si no los defines, Laravel protegerá contra asignación masiva.
      */
     protected $fillable = [
-        'nombre',
-        'apellido',
-        'email',
-        'password',
-        'telefono',
+        'nombre', 'apellido', 'email', 'password',
+        'direccion', 'telefono', 'rol',
         // Añade aquí cualquier otro campo que puedas asignar masivamente al crear un usuario
     ];
 

@@ -8,7 +8,7 @@ class CarritoPromocion extends Model
 {
     protected $table = 'carrito_promociones';
 
-    protected $fillable = ['carrito_id', 'promocion_id', 'cantidad'];
+    protected $fillable = ['carrito_id', 'promocion_id', 'cantidad', ];
 
     public function promocion()
     {

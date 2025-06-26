@@ -1,0 +1,321 @@
+/* General Body and Main layout */
+body {
+    font-family: 'Montserrat', sans-serif; /* Consistente con tus otras fuentes */
+    background-color: #f0f2f5; /* Fondo suave */
+    margin: 0;
+    padding: 0;
+    display: flex; /* Para que el header y main se acomoden bien */
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    padding: 40px 20px; /* Padding general para el contenido principal */
+    display: flex;
+    justify-content: center; /* Centra la tarjeta de perfil */
+    align-items: flex-start; /* Alinea arriba */
+    min-height: calc(100vh - 80px); /* Ajusta si tu header tiene una altura diferente */
+}
+
+/* --- Perfil Card --- */
+.perfil-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 100%;
+    max-width: 600px; /* Ancho máximo para la tarjeta de perfil */
+    text-align: center;
+    animation: fadeIn 0.8s ease-out; /* Animación de entrada */
+}
+
+.perfil-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f2f5;
+}
+
+.perfil-title-icon {
+    background-color: #5e3fa3; /* Color púrpura */
+    color: #fff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-right: 15px;
+    box-shadow: 0 4px 8px rgba(94, 63, 163, 0.3);
+}
+
+.perfil-title h2 {
+    font-family: 'DynaPuff', cursive;
+    font-size: 28px;
+    color: #3b1e70; /* Púrpura oscuro */
+    margin: 0;
+}
+
+.perfil-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espacio entre cada línea de información */
+    text-align: left; /* Alinea el texto a la izquierda */
+    margin-bottom: 30px;
+}
+
+.perfil-info > div {
+    display: flex;
+    flex-direction: column; /* Apila etiqueta y valor */
+    border-bottom: 1px dashed #e2e8f0; /* Línea suave */
+    padding-bottom: 10px;
+    padding-top: 5px;
+}
+
+.perfil-info span {
+    font-weight: 700;
+    color: #4a5568; /* Gris oscuro para las etiquetas */
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.perfil-info p {
+    color: #2d3748; /* Texto principal oscuro */
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.no-registrado {
+    color: #ef4444; /* Rojo para "No registrado" */
+    font-style: italic;
+    font-weight: 400;
+}
+
+.btn-editar {
+    background-color: #f7ea27; /* Amarillo */
+    color: #3b1e70; /* Púrpura oscuro */
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    display: inline-flex; /* Para alinear el icono */
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-editar:hover {
+    background-color: #fafe0b;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-editar .fas {
+    animation: pulse 2s infinite; /* Usa la animación de animate.css */
+}
+
+/* --- Modal Styles --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Asegura que esté por encima de todo */
+}
+
+.modal.oculto {
+    display: none;
+}
+
+.modal-box {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+    padding: 30px;
+    width: 90%; /* Ajusta el ancho para móviles */
+    max-width: 500px; /* Ancho máximo para el modal */
+    position: relative;
+    animation: zoomIn 0.4s ease-out; /* Animación de entrada */
+}
+
+.btn-cerrar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #a0aec0; /* Gris más suave */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.btn-cerrar:hover {
+    color: #ef4444; /* Rojo al pasar el ratón */
+}
+
+.modal-box .perfil-title {
+    margin-bottom: 25px;
+}
+
+.modal-box form > div {
+    margin-bottom: 20px; /* Espacio entre cada grupo label/input */
+    text-align: left;
+}
+
+.modal-box label {
+    display: block; /* Asegura que la etiqueta esté en su propia línea */
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+/* --- CLAVE PARA QUE LOS INPUTS NO SOBRESALGAN --- */
+.modal-box input[type="text"],
+.modal-box input[type="email"],
+.modal-box input[type="tel"], /* Asegúrate de incluir el tipo 'tel' si usas */
+.modal-box input:not([type="submit"]):not([type="button"]) { /* Selector más general para inputs de texto */
+    width: 100%; /* ¡Esto hace que el input ocupe todo el ancho disponible! */
+    padding: 12px 15px; /* Más padding para mejor usabilidad */
+    border: 1px solid #cbd5e0; /* Borde suave */
+    border-radius: 8px; /* Esquinas ligeramente redondeadas */
+    font-size: 16px;
+    color: #2d3748;
+    background-color: #edf2f7; /* Un fondo ligeramente gris para distinguirlo */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box; /* Crucial para que el padding no añada ancho extra */
+}
+
+.modal-box input:focus {
+    outline: none;
+    border-color: #5e3fa3; /* Borde púrpura al enfocar */
+    box-shadow: 0 0 0 3px rgba(94, 63, 163, 0.2); /* Sombra suave al enfocar */
+}
+
+.btn-guardar {
+    background-color: #10b981; /* Verde */
+    color: white;
+    padding: 12px 25px;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-guardar:hover {
+    background-color: #0c9c6f; /* Verde más oscuro */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Mensajes de éxito/error (usando SweetAlert o similar) */
+.swal2-popup .swal2-title {
+    font-family: 'DynaPuff', cursive;
+    color: #3b1e70;
+}
+.swal2-popup .swal2-html-container {
+    font-family: 'Poppins', sans-serif;
+    color: #2d3748;
+}
+.swal2-confirm {
+    background-color: #10b981 !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+.swal2-cancel {
+    background-color: #ef4444 !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+/* Animaciones (si usas animate.css) */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+
+/* --- Media Queries para responsividad --- */
+@media (max-width: 768px) {
+    main {
+        padding: 20px 15px; /* Menos padding en móviles */
+    }
+
+    .perfil-card {
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .perfil-title h2 {
+        font-size: 24px;
+    }
+
+    .perfil-title-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        margin-right: 10px;
+    }
+
+    .perfil-info span {
+        font-size: 14px;
+    }
+
+    .perfil-info p {
+        font-size: 16px;
+    }
+
+    .btn-editar {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+
+    /* Modal */
+    .modal-box {
+        padding: 20px;
+        border-radius: 8px;
+        width: 95%; /* Un poco más de ancho en móviles */
+    }
+
+    .btn-cerrar {
+        font-size: 24px;
+        top: 10px;
+        right: 10px;
+    }
+
+    .modal-box label {
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .modal-box input {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .btn-guardar {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+}
