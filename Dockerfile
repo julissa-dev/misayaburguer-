@@ -32,6 +32,7 @@ WORKDIR /var/www/html
 # Instalar dependencias PHP
 RUN composer install --no-dev --optimize-autoloader
 
+COPY .env.example .env
 # Ejecutar comandos necesarios de Laravel
 RUN php artisan key:generate
 RUN php artisan storage:link
