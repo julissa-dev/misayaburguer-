@@ -6,6 +6,7 @@ services:
     buildFilter:
       paths: ["**/*"]
     startCommand: apache2-foreground
+    postDeployCommand: php artisan migrate --force
     envVars:
       - key: APP_ENV
         value: production

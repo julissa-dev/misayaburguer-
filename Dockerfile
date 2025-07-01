@@ -1,24 +1,27 @@
 FROM php:8.2-apache
 
-# Instala extensiones requeridas
+# Instalar extensiones requeridas
 RUN apt-get update && apt-get install -y \
-    git zip unzip libonig-dev libxml2-dev libzip-dev \
+    libonig-dev zip unzip libzip-dev git curl libpng-dev libxml2-dev \
     && docker-php-ext-install pdo pdo_mysql zip
 
-# Habilita mod_rewrite
+# Habilitar mod_rewrite para Laravel
 RUN a2enmod rewrite
 
-# Copia archivos
+# Copiar archivos del proyecto Laravel al contenedor
 COPY . /var/www/html
 
-# Establece el directorio de trabajo
+# Establecer el directorio de trabajo a public/
 WORKDIR /var/www/html
 
-# Instala Composer
+# Configurar Apache para que sirva desde public/
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+
+# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Instala dependencias PHP
+# Instalar dependencias PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Permisos
+# Dar permisos a las carpetas necesarias
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
