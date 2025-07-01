@@ -32,14 +32,15 @@ WORKDIR /var/www/html
 # Instalar dependencias PHP
 RUN composer install --no-dev --optimize-autoloader
 
-COPY .env.example .env
-# Ejecutar comandos necesarios de Laravel
-RUN php artisan key:generate
+# Eliminar la copia del .env.example para que Railway inyecte las variables
+# REMOVER ESTA LÍNEA: COPY .env.example .env
+
+# Ejecutar comandos necesarios de Laravel (sin la clave, Railway la inyecta)
+# REMOVER ESTA LÍNEA: RUN php artisan key:generate
 RUN php artisan storage:link
 RUN php artisan config:cache
 RUN php artisan route:cache
 RUN php artisan view:cache
-
 
 # Establecer permisos correctos
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
@@ -50,5 +51,16 @@ RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available
 # Exponer el puerto
 EXPOSE 80
 
-# Iniciar Apache en primer plano
-CMD ["apache2-foreground"]
+# === CAMBIO CRÍTICO AQUÍ: MODIFICAR CMD ===
+# Este es el comando que se ejecuta cuando el contenedor inicia.
+# Incluye la espera por la DB, migraciones y luego inicia Apache.
+CMD ["/bin/bash", "-c", "\
+    echo 'Waiting for MySQL...' && \
+    until nc -z mysql.railway.internal 3306; do \
+        echo 'MySQL is unavailable - sleeping' && sleep 5; \
+    done && \
+    echo 'MySQL is up - executing migrations' && \
+    sleep 5 && \  # Pequeño sleep adicional para asegurar que MySQL esté listo
+    php artisan migrate --force && \
+    apache2-foreground \
+"]
