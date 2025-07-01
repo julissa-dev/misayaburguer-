@@ -60,7 +60,7 @@ CMD ["/bin/bash", "-c", "\
         echo 'MySQL is unavailable - sleeping' && sleep 5; \
     done && \
     echo 'MySQL is up - executing migrations' && \
-    sleep 5 && \  # Pequeño sleep adicional para asegurar que MySQL esté listo
+    sleep 5 && \
     php artisan migrate --force && \
-    apache2-foreground \
+    apache2-foreground\
 "]
